@@ -1,3 +1,5 @@
+require("expose-loader?$!expose-loader?jQuery!jquery");
+
 import * as ex from "excalibur"
 
 class Button extends ex.ScreenElement {
@@ -22,7 +24,7 @@ class Button extends ex.ScreenElement {
 
     onInitialize() {
         this.on('pointerup', () => {
-            alert("I've been clicked")
+            $.post("preparation/create_game")
         })
     }
 }
