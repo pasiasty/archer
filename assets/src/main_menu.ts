@@ -1,9 +1,35 @@
 import * as ex from "excalibur"
 
+class Button extends ex.ScreenElement {
+    constructor(text: string, x: number, y: number) {
+        super({
+            x: x,
+            y: y,
+            width: 200,
+            height: 65,
+            color: ex.Color.DarkGray,
+        })
+
+        var label = new ex.Label({
+            text: text,
+            x: 10,
+            y: 50,
+            fontSize: 28,
+        })
+
+        this.add(label)
+    }
+
+    onInitialize() {
+        this.on('pointerup', () => {
+            alert("I've been clicked")
+        })
+    }
+}
+
 export class MainMenu extends ex.Scene {
     public onInitialize(engine: ex.Engine) {
-        const paddle = new ex.Actor(150, engine.drawHeight - 40, 200, 20)
-        paddle.color = ex.Color.Chartreuse
-        this.add(paddle)
+        this.add(new Button("Create game", 150, 150))
+        this.add(new Button("Join game", 150, 250))
     }
 }
