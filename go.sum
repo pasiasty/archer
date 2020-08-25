@@ -165,6 +165,7 @@ github.com/gobuffalo/buffalo-pop v1.13.0/go.mod h1:h+zfyXCUFwihFqz6jmo9xsdsZ1Tm9
 github.com/gobuffalo/buffalo-pop v1.16.0/go.mod h1:XYA72cNFvL6m1o7PZ+Z7Yd/WDQTPcOiuDukiHvEo2KY=
 github.com/gobuffalo/buffalo-pop v1.17.2/go.mod h1:nyOm0mtmp9/+m2NaXrp+9SqtuKZslA7Ys2DBaT/t2n4=
 github.com/gobuffalo/buffalo-pop v1.22.0/go.mod h1:S8uJpbC9PUMFA6ZWbPnbk3c32n4vJ32p5NLsREcz+H8=
+github.com/gobuffalo/buffalo-pop v1.23.1 h1:AnxJQZu/ZN7HCm3L8YBJoNWc2UiwSe6UHv5S4DfXUDA=
 github.com/gobuffalo/buffalo-pop v1.23.1/go.mod h1:Sb+fy/hLtxfhOrtLAJiL7JsKqazydmAVqp5rcHio/yg=
 github.com/gobuffalo/buffalo-pop/v2 v2.0.4/go.mod h1:92Pr10dTvyrYR0YWUr0FLJLQDy3E4iliugKRpHPDDOc=
 github.com/gobuffalo/clara v0.4.1/go.mod h1:3QgAPqYgPqAzhfGbNLlp4UztaZRi2SOg+ZrZwaq9L94=
@@ -1255,6 +1256,7 @@ golang.org/x/tools v0.0.0-20191224055732-dd894d0a8a40/go.mod h1:TB2adYChydJhpapK
 golang.org/x/tools v0.0.0-20200117220505-0cba7a3a9ee9/go.mod h1:TB2adYChydJhpapKDTa4BR/hXlZSLoq2Wpct/0txZ28=
 golang.org/x/tools v0.0.0-20200131211209-ecb101ed6550/go.mod h1:TB2adYChydJhpapKDTa4BR/hXlZSLoq2Wpct/0txZ28=
 golang.org/x/tools v0.0.0-20200308013534-11ec41452d41/go.mod h1:o4KQGtdN14AW+yjsvvwRTJJuXz8XRtIHtEnmAXLyFUw=
+golang.org/x/tools v0.0.0-20200323192200-8849913b6971 h1:7xTjEBkQgB1qdLZddETld2Flxf5D/U848jdOyhu39TE=
 golang.org/x/tools v0.0.0-20200323192200-8849913b6971/go.mod h1:Sl4aGygMT6LrqrWclx+PTx3U+LnKx/seiNR+3G19Ar8=
 golang.org/x/xerrors v0.0.0-20190410155217-1f06c39b4373/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
 golang.org/x/xerrors v0.0.0-20190513163551-3ee3066db522/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
