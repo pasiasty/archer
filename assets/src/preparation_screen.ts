@@ -1,16 +1,13 @@
-import { getDiv } from "./utils"
+import { Screen } from "./screen"
 
-export class PreparationScreen {
-    ui: HTMLDivElement
-
+export class PreparationScreen extends Screen {
     constructor() {
-        this.ui = getDiv("preparation_screen")
+        super("preparation_screen")
 
         const label = document.createElement("label")
         label.innerText = "Preparation screen"
         label.className = 'label'
 
-        this.ui.appendChild(label)
-        this.ui.hidden = true
+        this.disable()
     }
 }

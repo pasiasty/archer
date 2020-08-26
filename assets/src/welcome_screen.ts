@@ -1,10 +1,8 @@
-import { getDiv } from "./utils"
+import { Screen } from "./screen"
 
-export class WelcomeScreen {
-    ui: HTMLDivElement
-
+export class WelcomeScreen extends Screen {
     constructor() {
-        this.ui = getDiv("welcome_screen")
+        super("welcome_screen")
 
         const container = document.createElement('div')
         container.className = 'ui_container'

@@ -1,13 +1,6 @@
-export function getDiv(id: string): HTMLDivElement {
-    var res = <HTMLDivElement>document.getElementById(id)
+export function getElement(id: string): HTMLElement {
+    var res = document.getElementById(id)
     if (res == null)
-        throw new Error("Failed to obtain UI element")
-    return res
-}
-
-export function getCanvas(id: string): HTMLCanvasElement {
-    var res = <HTMLCanvasElement>document.getElementById(id)
-    if (res == null)
-        throw new Error("Failed to obtain UI element")
+        throw new Error("Failed to obtain element: " + id)
     return res
 }
