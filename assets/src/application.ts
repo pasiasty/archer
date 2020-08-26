@@ -9,7 +9,7 @@ import { Game } from "./game"
 $(() => {
 
     var ws = new WelcomeScreen()
-    var ps = new PreparationScreen()
-    var game = new Game()
-    
+    // var ps = new PreparationScreen()
+    // var game = new Game()
+
 });

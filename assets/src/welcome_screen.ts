@@ -6,11 +6,24 @@ export class WelcomeScreen {
     constructor() {
         this.ui = getDiv("welcome_screen")
 
-        const createGame = document.createElement('button')
-    createGame.className = 'button'
-    createGame.id = "create_game"
-    createGame.innerText = "Create game"
+        const container = document.createElement('div')
+        container.className = 'ui_container'
 
-    this.ui.appendChild(createGame)
+        const createGame = document.createElement('button')
+        createGame.className = 'button'
+        createGame.innerText = "Create game"
+
+        const joinGame = document.createElement('button')
+        joinGame.className = 'button'
+        joinGame.innerText = "Join game"
+
+        const input = document.createElement('input')
+        input.className = 'input'
+
+        container.appendChild(createGame)
+        container.appendChild(input)
+        container.appendChild(joinGame)
+
+        this.ui.appendChild(container)
     }
 }

@@ -4,22 +4,52 @@
 @import "buffalo";
 
 .display {
-   position: absolute;
-   width: 100%; 
-   height: 100%; 
-   top:0; 
-   left:0;
-   pad: 0;
+  align-content: center;
+  align-self: center;
+  position: absolute;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pad: 0;
 }
 
 .label {
-    position: absolute;
-    background: red;
-    color: white;
+  position: absolute;
+  background: red;
+  color: white;
+}
+
+.input {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  position: relative;
+  margin: 0 auto;
+  width: 500px;
+  height: 80px;
+  font-size: 32px;
+  z-index: 100;
 }
 
 .button {
-    position: absolute;
-    background: red;
-    color: white;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  position: relative;
+  margin: 0 auto;
+  width: 500px;
+  height: 80px;
+  font-size: 32px;
+  background: red;
+  color: white;
+  z-index: 100;
+}
+
+.ui_container {
+  display: grid;
+  position: relative;
+  margin: 0 auto;
+  background: blue;
+  color: white;
+  //   z-index: -100;
 }
