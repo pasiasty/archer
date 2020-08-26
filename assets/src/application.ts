@@ -2,12 +2,14 @@ require("expose-loader?$!expose-loader?jQuery!jquery");
 require("bootstrap/dist/js/bootstrap.bundle.js");
 require("@fortawesome/fontawesome-free/js/all.js");
 
-import * as ex from "excalibur"
+import { WelcomeScreen } from "./welcome_screen"
+import { PreparationScreen } from "./preparation_screen"
+import { Game } from "./game"
 
-import { MainMenu } from "./main_menu"
+$(() => {
 
-const game = new ex.Engine({})
-
-game.add('mainmenu', new MainMenu(game))
-game.goToScene('mainmenu')
-game.start()
+    var ws = new WelcomeScreen()
+    var ps = new PreparationScreen()
+    var game = new Game()
+    
+});
