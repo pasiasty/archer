@@ -13,7 +13,12 @@ export class WelcomeScreen extends Screen {
         createGame.innerText = "Create game"
 
         createGame.onclick = () => {
-            this.ss.setCurrentScreen("preparation_screen")
+            $.post("/preparation/create_game", (data) => {
+                var resp = data as string
+                if (resp != null && resp == "OK") {
+                    this.ss.setCurrentScreen("preparation_screen")
+                }
+            })
         }
 
         const joinGame = document.createElement('button')
