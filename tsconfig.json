@@ -3,14 +3,12 @@
     "outDir": "./dist/",
     "noImplicitAny": true,
     "module": "commonjs",
-    "target": "es5",
+    "target": "es6",
     "sourceMap": true,
     "strict": true,
     "esModuleInterop": true,
     "jsx": "react",
     "allowJs": true
   },
-  "include": [
-    "./assets/src/**/*.ts"
-  ]
+  "include": ["./assets/src/**/*.ts"]
 }

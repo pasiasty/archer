@@ -1,8 +1,9 @@
 import { Screen } from "./screen"
+import { ScreenSelector } from "./screen_selector"
 
 export class WelcomeScreen extends Screen {
-    constructor() {
-        super("welcome_screen")
+    constructor(ss: ScreenSelector) {
+        super("welcome_screen", ss)
 
         const container = document.createElement('div')
         container.className = 'ui_container'
@@ -10,6 +11,10 @@ export class WelcomeScreen extends Screen {
         const createGame = document.createElement('button')
         createGame.className = 'button'
         createGame.innerText = "Create game"
+
+        createGame.onclick = () => {
+            this.ss.setCurrentScreen("preparation_screen")
+        }
 
         const joinGame = document.createElement('button')
         joinGame.className = 'button'
