@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/pasiasty/archer2/actions"
+	"github.com/pasiasty/archer/actions"
 )
 
 // main is the starting point for your Buffalo application.

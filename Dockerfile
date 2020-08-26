@@ -5,8 +5,8 @@ FROM gobuffalo/buffalo:v0.16.14 as builder
 ENV GO111MODULE on
 ENV GOPROXY http://proxy.golang.org
 
-RUN mkdir -p /src/github.com/pasiasty/archer2
-WORKDIR /src/github.com/pasiasty/archer2
+RUN mkdir -p /src/github.com/pasiasty/archer
+WORKDIR /src/github.com/pasiasty/archer
 
 # this will cache the npm install step, unless package.json changes
 ADD package.json .
