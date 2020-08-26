@@ -1,5 +1,5 @@
-name = "archer2"
-bin = "bin/archer2"
+name = "archer"
+bin = "bin/archer"
 vcs = "git"
 with_pop = false
 with_sqlite = false

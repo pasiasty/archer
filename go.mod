@@ -1,4 +1,4 @@
-module github.com/pasiasty/archer2
+module github.com/pasiasty/archer
 
 go 1.13
 
