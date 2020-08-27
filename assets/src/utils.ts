@@ -46,3 +46,7 @@ export function copyToClipboard(val: string) {
     document.execCommand('copy');
     document.body.removeChild(selBox);
 }
+
+export function isHost(): boolean {
+    return getCookie("is_host") == "true"
+}

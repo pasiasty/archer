@@ -1,10 +1,10 @@
 import { Screen } from "./screen"
-import { getCookie, copyToClipboard } from "./utils"
+import { getCookie, copyToClipboard, isHost } from "./utils"
 import { ScreenSelector } from "./screen_selector"
-import { join } from "core-js/fn/array"
 
 export class PreparationScreen extends Screen {
     joinLink: HTMLLabelElement
+    usernameLabel: HTMLLabelElement
 
     constructor(ss: ScreenSelector) {
         super("preparation_screen", ss)
@@ -12,9 +12,8 @@ export class PreparationScreen extends Screen {
         const container = document.createElement('div')
         container.className = 'ui_container'
 
-        const label = document.createElement("label")
-        label.innerText = "Preparation screen"
-        label.className = 'preparation label'
+        this.usernameLabel = document.createElement("label")
+        this.usernameLabel.className = 'preparation label'
 
         this.joinLink = <HTMLLabelElement>document.createElement("label")
         this.joinLink.className = 'preparation label'
@@ -27,7 +26,7 @@ export class PreparationScreen extends Screen {
             copyToClipboard(this.joinLink.innerText)
         }
 
-        container.appendChild(label)
+        container.appendChild(this.usernameLabel)
         container.appendChild(this.joinLink)
         container.appendChild(copyJoinLink)
 
@@ -39,6 +38,12 @@ export class PreparationScreen extends Screen {
     enable() {
         super.enable()
         var gameID = getCookie("game_id")
+        var username = getCookie("username")
         this.joinLink.innerText = `${window.location.href}${gameID}`
+        this.usernameLabel.innerText = `User: ${username}`
+
+        if (isHost()) {
+            this.usernameLabel.innerText += ' (host)'
+        }
     }
 }

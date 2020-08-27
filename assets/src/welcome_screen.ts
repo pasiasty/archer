@@ -15,7 +15,7 @@ export class WelcomeScreen extends Screen {
 
         createGame.onclick = () => {
             $.post("/preparation/create_game", (data) => {
-                this.switchToPreparationScreen(data)
+                this.ss.setCurrentScreen("preparation_screen")
             }, "json").fail((data) => {
                 alert("Couldn't create game")
             })
@@ -30,7 +30,7 @@ export class WelcomeScreen extends Screen {
 
         joinGame.onclick = () => {
             $.post("/preparation/join_game", { "game_id": input.value }, (data) => {
-                this.switchToPreparationScreen(data)
+                this.ss.setCurrentScreen("preparation_screen")
             }, "json").fail((data) => {
                 alert("Couldn't find game: " + input.value)
             })
@@ -41,13 +41,5 @@ export class WelcomeScreen extends Screen {
         container.appendChild(joinGame)
 
         this.ui.appendChild(container)
-    }
-
-    switchToPreparationScreen(data: JQuery.PlainObject) {
-        var gameID = data["GameID"]
-        var userID = data["UserID"]
-        setCookie("game_id", gameID)
-        setCookie("user_id", userID)
-        this.ss.setCurrentScreen("preparation_screen")
     }
 }

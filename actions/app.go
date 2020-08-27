@@ -5,6 +5,7 @@ import (
 	"github.com/gobuffalo/envy"
 	forcessl "github.com/gobuffalo/mw-forcessl"
 	paramlogger "github.com/gobuffalo/mw-paramlogger"
+	"github.com/pasiasty/archer/server"
 	"github.com/unrolled/secure"
 
 	csrf "github.com/gobuffalo/mw-csrf"
@@ -16,7 +17,11 @@ import (
 // application is being run. Default is "development".
 var ENV = envy.Get("GO_ENV", "development")
 var app *buffalo.App
+
+// T translator.
 var T *i18n.Translator
+
+var gm = server.CreateGameManager()
 
 // App is where all routes and middleware for buffalo
 // should be defined. This is the nerve center of your

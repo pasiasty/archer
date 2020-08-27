@@ -15,11 +15,10 @@ func HomeHandler(c buffalo.Context) error {
 // JoinHomeHandler lets to join the game.
 func JoinHomeHandler(c buffalo.Context) error {
 	gameID := c.Param("game_id")
-	userID, err := gm.joinGame(gameID)
+	user, err := gm.JoinGame(gameID)
 	if err != nil {
 		return err
 	}
-	setCookie(c, "game_id", gameID)
-	setCookie(c, "user_id", userID)
+	user.StoreToCookie(c)
 	return c.Redirect(307, "/")
 }
