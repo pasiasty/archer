@@ -17,3 +17,9 @@ func (as *ActionSuite) Test_Preparation_PollGame() {
 
 func (as *ActionSuite) Test_Preparation_ListUsers() {
 }
+
+func (as *ActionSuite) Test_Preparation_AddPlayer() {
+}
+
+func (as *ActionSuite) Test_Preparation_RemovePlayer() {
+}

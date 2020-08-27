@@ -45,3 +45,19 @@ func PreparationListUsers(c buffalo.Context) error {
 
 	return c.Render(http.StatusOK, r.JSON(server.UsersList{Users: game.GetUsersList()}))
 }
+
+// PreparationAddPlayer default implementation.
+func PreparationAddPlayer(c buffalo.Context) error {
+	gameID := c.Param("game_id")
+	userID := c.Param("user_id")
+
+	if err := gm.AddPlayer(gameID, userID); err != nil {
+		return err
+	}
+	return c.Render(http.StatusOK, r.JSON(server.Empty{}))
+}
+
+// PreparationRemovePlayer default implementation.
+func PreparationRemovePlayer(c buffalo.Context) error {
+	return c.Render(http.StatusOK, r.HTML("preparation/remove_player.html"))
+}

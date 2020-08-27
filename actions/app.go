@@ -43,6 +43,7 @@ func App() *buffalo.App {
 			SessionName: "_archer_session",
 		})
 
+		app.Use(server.IgnoreBots)
 		// Automatically redirect to SSL
 		app.Use(forceSSL())
 
@@ -64,6 +65,8 @@ func App() *buffalo.App {
 		app.POST("/preparation/user_ready", PreparationUserReady)
 		app.POST("/preparation/poll_game", PreparationPollGame)
 		app.POST("/preparation/list_users", PreparationListUsers)
+		app.POST("/preparation/add_player", PreparationAddPlayer)
+		app.POST("/preparation/remove_player", PreparationRemovePlayer)
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}
 

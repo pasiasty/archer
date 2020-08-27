@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/gobuffalo/buffalo"
 )
@@ -11,13 +12,16 @@ type User struct {
 	GameID   string
 	UserID   string
 	Username string
+	Players  []string
 	IsHost   bool
 	ready    bool
+	mux      sync.Mutex
 }
 
 // PublicUser contains public information of the user to be shared with other users.
 type PublicUser struct {
 	Username string
+	Players  []string
 	Ready    bool
 	IsHost   bool
 }
@@ -28,8 +32,30 @@ func CreateUser(gameID, userID, username string, isHost bool) *User {
 		GameID:   gameID,
 		UserID:   userID,
 		Username: username,
+		Players:  []string{username},
 		IsHost:   isHost,
 	}
+}
+
+// AddPlayer adds another player to the user.
+func (u *User) AddPlayer(name string) {
+	u.mux.Lock()
+	defer u.mux.Unlock()
+	u.Players = append(u.Players, name)
+}
+
+// RemovePlayer adds another player to the user.
+func (u *User) RemovePlayer() (string, error) {
+	u.mux.Lock()
+	defer u.mux.Unlock()
+
+	if len(u.Players) <= 1 {
+		return "", fmt.Errorf("no extra players on user: %s", u.UserID)
+	}
+	lastPlayer := u.Players[len(u.Players)-1]
+	u.Players[len(u.Players)-1] = ""
+	u.Players = u.Players[:len(u.Players)-1]
+	return lastPlayer, nil
 }
 
 // StoreToCookie stores all user relevant information into cookie.
@@ -44,6 +70,7 @@ func (u *User) StoreToCookie(c buffalo.Context) {
 func (u *User) ConstructPublicUser() *PublicUser {
 	return &PublicUser{
 		Username: u.Username,
+		Players:  u.Players,
 		Ready:    u.ready,
 		IsHost:   u.IsHost,
 	}

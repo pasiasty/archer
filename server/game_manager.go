@@ -57,6 +57,26 @@ func (gm *GameManager) JoinGame(gameID string) (*User, error) {
 	return game.AddClientUser(), nil
 }
 
+// AddPlayer adds another player to selected user and game.
+func (gm *GameManager) AddPlayer(gameID, userID string) error {
+	game, err := gm.GetGame(gameID)
+	if err != nil {
+		return err
+	}
+
+	return game.AddPlayer(userID)
+}
+
+// RemovePlayer removes player from selected user and game.
+func (gm *GameManager) RemovePlayer(gameID, userID string) error {
+	game, err := gm.GetGame(gameID)
+	if err != nil {
+		return err
+	}
+
+	return game.RemovePlayer(userID)
+}
+
 func unifyGamesMap(m map[string]*Game) map[string]bool {
 	res := map[string]bool{}
 

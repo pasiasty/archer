@@ -68,10 +68,13 @@ func (g *Game) AddClientUser() *User {
 	return g.addUser(false)
 }
 
-// HasUser tells whether game contains the user.
-func (g *Game) HasUser(userID string) bool {
-	_, ok := g.users[userID]
-	return ok
+// GetUser gets selected user.
+func (g *Game) GetUser(userID string) (*User, error) {
+	user, ok := g.users[userID]
+	if !ok {
+		return nil, fmt.Errorf("failed to get user %s from game %s", userID, g.gameID)
+	}
+	return user, nil
 }
 
 // GetUsersList gets the list of game users.
@@ -83,6 +86,40 @@ func (g *Game) GetUsersList() []*PublicUser {
 	}
 
 	return res
+}
+
+// AddPlayer ads another player to selected user.
+func (g *Game) AddPlayer(userID string) error {
+	user, err := g.GetUser(userID)
+	if err != nil {
+		return err
+	}
+
+	g.mux.Lock()
+	defer g.mux.Unlock()
+
+	username := g.generateUsername()
+	g.usernamesToIDs[username] = user.UserID
+	user.AddPlayer(username)
+	return nil
+}
+
+// RemovePlayer removes player from selected user.
+func (g *Game) RemovePlayer(userID string) error {
+	user, err := g.GetUser(userID)
+	if err != nil {
+		return err
+	}
+
+	g.mux.Lock()
+	defer g.mux.Unlock()
+
+	name, err := user.RemovePlayer()
+	if err != nil {
+		return err
+	}
+	delete(g.usernamesToIDs, name)
+	return nil
 }
 
 func (g *Game) generateUsername() string {
