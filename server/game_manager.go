@@ -106,3 +106,21 @@ func (gm *GameManager) MarkUserReady(gameID, userID string) error {
 	}
 	return game.MarkUserReady(userID)
 }
+
+// StartGame starts the game.
+func (gm *GameManager) StartGame(gameID, userID string) error {
+	game, err := gm.GetGame(gameID)
+	if err != nil {
+		return err
+	}
+	return game.Start(userID)
+}
+
+// GameHasStarted tells whether game has started.
+func (gm *GameManager) GameHasStarted(gameID string) (bool, error) {
+	game, err := gm.GetGame(gameID)
+	if err != nil {
+		return false, err
+	}
+	return game.Started(), nil
+}

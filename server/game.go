@@ -47,6 +47,7 @@ type Game struct {
 	mux            sync.Mutex
 	host           *User
 	gameID         string
+	started        bool
 	users          map[string]*User
 	usernamesToIDs map[string]string
 }
@@ -58,6 +59,27 @@ func CreateGame(gameID string) *Game {
 		users:          map[string]*User{},
 		usernamesToIDs: map[string]string{},
 	}
+}
+
+// Started tells whether game has started.
+func (g *Game) Started() bool {
+	return g.started
+}
+
+// Start starts the game.
+func (g *Game) Start(userID string) error {
+	if g.host.UserID != userID {
+		return fmt.Errorf("user: %s is not a host and can't start the game: %s", userID, g.gameID)
+	}
+	g.mux.Lock()
+	defer g.mux.Unlock()
+
+	if g.started {
+		return nil
+	}
+
+	g.started = true
+	return nil
 }
 
 // AddHostUser adds new user as host.

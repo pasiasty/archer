@@ -41,5 +41,7 @@ export class WelcomeScreen extends Screen {
         container.appendChild(joinGame)
 
         this.ui.appendChild(container)
+
+        this.disable()
     }
 }

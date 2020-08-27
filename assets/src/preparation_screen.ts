@@ -1,12 +1,13 @@
 import { Screen } from "./screen"
-import { getCookie, copyToClipboard, isHost, deleteCookie } from "./utils"
+import { getCookie, copyToClipboard, isHost, deleteCookie, setCookie } from "./utils"
 import { ScreenSelector } from "./screen_selector"
 import { UsersList } from "./messages"
 
 export class PreparationScreen extends Screen {
     joinLink: HTMLLabelElement
     usernameLabel: HTMLLabelElement
-    timerID: number | undefined
+    refreshTimerID: number | undefined
+    gameStartedTimerID: number | undefined
     userList: HTMLDivElement
     startGame: HTMLButtonElement
     userReady: HTMLButtonElement
@@ -33,7 +34,7 @@ export class PreparationScreen extends Screen {
         this.copyJoinLink.innerText = "Copy link to clipboard"
 
         this.copyJoinLink.onclick = () => {
-            copyToClipboard(this.joinLink.innerText)
+            copyToClipboard(this.getJoinLink())
         }
 
         this.userList = document.createElement('div')
@@ -71,6 +72,15 @@ export class PreparationScreen extends Screen {
         this.startGame.innerText = "Start game"
 
         this.startGame.onclick = () => {
+            var gameID = getCookie("game_id")
+            var userID = getCookie("user_id")
+            var self = this
+            $.post("preparation/start_game", { "game_id": gameID, "user_id": userID }, (data: UsersList) => {
+                setCookie("game_started", "true")
+                self.ss.setCurrentScreen("game_screen")
+            }, "json").fail(() => {
+                self.restoreToWelcomeScreen()
+            })
         }
 
         this.leaveGame = document.createElement('button')
@@ -85,9 +95,11 @@ export class PreparationScreen extends Screen {
         this.disable()
     }
 
-    prepareTopDescription(self: PreparationScreen) {
-
+    getJoinLink(): string {
+        var gameID = getCookie("game_id")
+        return `${window.location.href}${gameID}`
     }
+
 
     restoreToWelcomeScreen() {
         deleteCookie("game_id")
@@ -101,7 +113,7 @@ export class PreparationScreen extends Screen {
         super.enable()
         var gameID = getCookie("game_id")
         var username = getCookie("username")
-        this.joinLink.innerText = `${window.location.href}${gameID}`
+        this.joinLink.innerText = `Game ID: ${gameID}`
         this.usernameLabel.innerText = `User: ${username}`
 
         this.container.appendChild(this.usernameLabel)
@@ -121,7 +133,10 @@ export class PreparationScreen extends Screen {
         this.container.appendChild(this.leaveGame)
 
         this.refresh(this)
-        this.timerID = window.setInterval(this.refresh, 1000, this)
+        this.refreshTimerID = window.setInterval(this.refresh, 1000, this)
+
+        if (!isHost())
+            this.gameStartedTimerID = window.setInterval(this.pollGameStatus, 1000, this)
     }
 
     disable() {
@@ -131,7 +146,8 @@ export class PreparationScreen extends Screen {
             if (this.container.lastChild != null)
                 this.container.removeChild(this.container.lastChild);
         }
-        window.clearTimeout(this.timerID)
+        window.clearTimeout(this.refreshTimerID)
+        window.clearTimeout(this.gameStartedTimerID)
     }
 
     updateUsersList(data: UsersList) {
@@ -167,6 +183,19 @@ export class PreparationScreen extends Screen {
 
     refresh(self: PreparationScreen) {
         self.postOrGoBack(self, "preparation/list_users")
+    }
+
+    pollGameStatus(self: PreparationScreen) {
+        var gameID = getCookie("game_id")
+
+        $.post("/preparation/game_has_started", { "game_id": gameID }, (data) => {
+            if (data == true) {
+                setCookie("game_started", "true")
+                self.ss.setCurrentScreen("game_screen")
+            }
+        }, "json").fail(() => {
+            self.restoreToWelcomeScreen()
+        })
     }
 
     postOrGoBack(self: PreparationScreen, path: string, backOnFail = true) {

@@ -36,11 +36,6 @@ func PreparationUserReady(c buffalo.Context) error {
 	return getUsersList(c, gameID)
 }
 
-// PreparationPollGame default implementation.
-func PreparationPollGame(c buffalo.Context) error {
-	return c.Render(http.StatusOK, r.JSON(server.Empty{}))
-}
-
 // PreparationListUsers default implementation.
 func PreparationListUsers(c buffalo.Context) error {
 	gameID := c.Param("game_id")
@@ -78,4 +73,26 @@ func getUsersList(c buffalo.Context, gameID string) error {
 	}
 
 	return c.Render(http.StatusOK, r.JSON(server.UsersList{Users: game.GetUsersList()}))
+}
+
+// PreparationStartGame default implementation.
+func PreparationStartGame(c buffalo.Context) error {
+	gameID := c.Param("game_id")
+	userID := c.Param("user_id")
+
+	if err := gm.StartGame(gameID, userID); err != nil {
+		return err
+	}
+	return c.Render(http.StatusOK, r.JSON(server.Empty{}))
+}
+
+// PreparationGameHasStarted default implementation.
+func PreparationGameHasStarted(c buffalo.Context) error {
+	gameID := c.Param("game_id")
+
+	started, err := gm.GameHasStarted(gameID)
+	if err != nil {
+		return err
+	}
+	return c.Render(http.StatusOK, r.JSON(started))
 }

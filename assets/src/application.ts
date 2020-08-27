@@ -22,9 +22,14 @@ $(() => {
     var gameID = getCookie("game_id")
     var userID = getCookie("user_id")
     var username = getCookie("username")
+    var gameStarted = getCookie("game_started")
 
     if (gameID != "" && userID != "" && username != "") {
-        ss.setCurrentScreen("preparation_screen")
+        if (gameStarted == "true") {
+            ss.setCurrentScreen("game_screen")
+        }
+        else
+            ss.setCurrentScreen("preparation_screen")
     } else {
         ss.setCurrentScreen("welcome_screen")
     }

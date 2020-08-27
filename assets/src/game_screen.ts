@@ -7,7 +7,7 @@ export class GameScreen extends Screen {
     game: ex.Engine
 
     constructor(ss: ScreenSelector) {
-        super("game", ss)
+        super("game_screen", ss)
 
         this.game = new ex.Engine({
             pointerScope: PointerScope.Canvas
