@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"sync"
+	"time"
 )
 
 var (
@@ -42,9 +43,19 @@ func (gm *GameManager) CreateGame() *User {
 	newGame := CreateGame(newGameID)
 	gm.games[newGameID] = newGame
 
+	// removing games automatically after 3 days
+	go func() {
+		<-time.After(3 * 24 * time.Microsecond)
+		gm.removeGame(newGameID)
+	}()
+
 	newUser := newGame.AddHostUser()
 
 	return newUser
+}
+
+func (gm *GameManager) removeGame(gameID string) {
+	delete(gm.games, gameID)
 }
 
 // JoinGame joins to game and creates new client user.
