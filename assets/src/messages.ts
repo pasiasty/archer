@@ -10,4 +10,9 @@ export class PublicUser {
     Username: string | undefined
     Ready: boolean | undefined
     IsHost: boolean | undefined
+    Players: string[]
+
+    constructor() {
+        this.Players = []
+    }
 }

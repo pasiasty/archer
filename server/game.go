@@ -8,8 +8,8 @@ import (
 
 var (
 	adjectives = []string{
+		"Moon",
 		"Chubby",
-		"Honky",
 		"Brave",
 		"Silent",
 		"Sneaky",
@@ -21,9 +21,11 @@ var (
 		"Envy",
 		"Angry",
 		"Complicated",
+		"Pretty",
 	}
 
 	nouns = []string{
+		"Moon",
 		"Panda",
 		"Horse",
 		"Elephant",
@@ -34,7 +36,7 @@ var (
 		"Crocodile",
 		"Dog",
 		"Cat",
-		"Kivi",
+		"Kiwi",
 		"Koala",
 		"Bear",
 	}

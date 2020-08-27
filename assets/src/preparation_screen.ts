@@ -32,27 +32,49 @@ export class PreparationScreen extends Screen {
         this.userList = document.createElement('div')
         this.userList.className = 'preparation user_list'
 
+        const addPlayer = document.createElement('button')
+        addPlayer.className = 'preparation button'
+        addPlayer.innerText = "Add player"
+
+        addPlayer.onclick = () => {
+            this.postOrGoBack(this, "preparation/add_player")
+        }
+
+        const removePlayer = document.createElement('button')
+        removePlayer.className = 'preparation button'
+        removePlayer.innerText = "Remove player"
+
+        removePlayer.onclick = () => {
+            this.postOrGoBack(this, "preparation/remove_player", false)
+        }
+
         const leaveGame = document.createElement('button')
         leaveGame.className = 'preparation button'
         leaveGame.innerText = "Leave game"
 
         leaveGame.onclick = () => {
-            deleteCookie("game_id")
-            deleteCookie("user_id")
-            deleteCookie("username")
-            deleteCookie("is_host")
-            this.ss.setCurrentScreen("welcome_screen")
+            this.restoreToWelcomeScreen()
         }
 
         container.appendChild(this.usernameLabel)
         container.appendChild(this.joinLink)
         container.appendChild(copyJoinLink)
         container.appendChild(this.userList)
+        container.appendChild(addPlayer)
+        container.appendChild(removePlayer)
         container.appendChild(leaveGame)
 
         this.ui.appendChild(container)
 
         this.disable()
+    }
+
+    restoreToWelcomeScreen() {
+        deleteCookie("game_id")
+        deleteCookie("user_id")
+        deleteCookie("username")
+        deleteCookie("is_host")
+        this.ss.setCurrentScreen("welcome_screen")
     }
 
     enable() {
@@ -78,36 +100,47 @@ export class PreparationScreen extends Screen {
     updateUsersList(data: UsersList) {
         var lines: string[] = []
         for (let user of data.Users) {
-            var beginning = '<span style="color: '
-            var postStyle = '">'
-            var ending = '</span><br>'
-            var colorText = ""
+            var userLines: string[] = []
+            for (var i = 0; i < user.Players.length; i++) {
+                var indent = '0px'
+                if (i != 0) {
+                    indent = '40px'
+                }
 
-            if (user.IsHost) {
-                colorText = "#0000ff"
-            } else if (user.Ready) {
-                colorText = "#00ff00"
-            } else {
-                colorText = "#ff0000"
+                var colorText = ""
+
+                if (user.IsHost) {
+                    colorText = "#0000ff"
+                } else if (user.Ready) {
+                    colorText = "#00ff00"
+                } else {
+                    colorText = "#ff0000"
+                }
+                userLines.push(`<span style="color: ${colorText}; margin-left: ${indent};">${user.Players[i]}</span><br>`)
             }
-            lines.push(`${beginning}${colorText}${postStyle}${user.Username}${ending}`)
+            lines.push(userLines.join(""))
         }
 
         lines.sort((a: string, b: string): number => {
             return a.localeCompare(b)
         })
 
-        this.userList.innerHTML = lines.join()
+        this.userList.innerHTML = lines.join("")
     }
 
     refresh(self: PreparationScreen) {
-        var gameID = getCookie("game_id")
+        self.postOrGoBack(self, "preparation/list_users")
+    }
 
-        $.post("/preparation/list_users", { "game_id": gameID }, (data: UsersList) => {
-            console.log(typeof data, data)
+    postOrGoBack(self: PreparationScreen, path: string, backOnFail = true) {
+        var gameID = getCookie("game_id")
+        var userID = getCookie("user_id")
+
+        $.post(path, { "game_id": gameID, "user_id": userID }, (data: UsersList) => {
             self.updateUsersList(data)
         }, "json").fail(() => {
-            alert("Couldn't list users")
+            if (backOnFail)
+                self.restoreToWelcomeScreen()
         })
     }
 }
