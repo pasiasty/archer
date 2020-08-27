@@ -45,7 +45,7 @@ func (gm *GameManager) CreateGame() *User {
 
 	// removing games automatically after 3 days
 	go func() {
-		<-time.After(3 * 24 * time.Microsecond)
+		<-time.After(3 * 24 * time.Hour)
 		gm.removeGame(newGameID)
 	}()
 
@@ -96,4 +96,13 @@ func unifyGamesMap(m map[string]*Game) map[string]bool {
 	}
 
 	return res
+}
+
+// MarkUserReady marks selected user as ready.
+func (gm *GameManager) MarkUserReady(gameID, userID string) error {
+	game, err := gm.GetGame(gameID)
+	if err != nil {
+		return err
+	}
+	return game.MarkUserReady(userID)
 }

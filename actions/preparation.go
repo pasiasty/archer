@@ -27,7 +27,13 @@ func PreparationJoinGame(c buffalo.Context) error {
 
 // PreparationUserReady default implementation.
 func PreparationUserReady(c buffalo.Context) error {
-	return c.Render(http.StatusOK, r.JSON(server.Empty{}))
+	gameID := c.Param("game_id")
+	userID := c.Param("user_id")
+
+	if err := gm.MarkUserReady(gameID, userID); err != nil {
+		return err
+	}
+	return getUsersList(c, gameID)
 }
 
 // PreparationPollGame default implementation.

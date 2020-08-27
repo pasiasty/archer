@@ -97,6 +97,10 @@ func (g *Game) AddPlayer(userID string) error {
 		return err
 	}
 
+	if user.Ready() {
+		return fmt.Errorf("can't add player to ready user: %s", user.UserID)
+	}
+
 	g.mux.Lock()
 	defer g.mux.Unlock()
 
@@ -111,6 +115,10 @@ func (g *Game) RemovePlayer(userID string) error {
 	user, err := g.GetUser(userID)
 	if err != nil {
 		return err
+	}
+
+	if user.Ready() {
+		return fmt.Errorf("can't remove player from ready user: %s", user.UserID)
 	}
 
 	g.mux.Lock()
@@ -162,4 +170,14 @@ func unifyUsersMap(m map[string]*User) map[string]bool {
 	}
 
 	return res
+}
+
+// MarkUserReady marks selected user as ready.
+func (g *Game) MarkUserReady(userID string) error {
+	user, err := g.GetUser(userID)
+	if err != nil {
+		return err
+	}
+	user.MarkReady()
+	return nil
 }

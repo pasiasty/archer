@@ -8,12 +8,19 @@ export class PreparationScreen extends Screen {
     usernameLabel: HTMLLabelElement
     timerID: number | undefined
     userList: HTMLDivElement
+    startGame: HTMLButtonElement
+    userReady: HTMLButtonElement
+    container: HTMLDivElement
+    copyJoinLink: HTMLButtonElement
+    addPlayer: HTMLButtonElement
+    removePlayer: HTMLButtonElement
+    leaveGame: HTMLButtonElement
 
     constructor(ss: ScreenSelector) {
         super("preparation_screen", ss)
 
-        const container = document.createElement('div')
-        container.className = 'ui_container'
+        this.container = document.createElement('div')
+        this.container.className = 'ui_container'
 
         this.usernameLabel = document.createElement("label")
         this.usernameLabel.className = 'preparation label'
@@ -21,52 +28,65 @@ export class PreparationScreen extends Screen {
         this.joinLink = <HTMLLabelElement>document.createElement("label")
         this.joinLink.className = 'preparation label'
 
-        const copyJoinLink = document.createElement('button')
-        copyJoinLink.className = 'preparation button'
-        copyJoinLink.innerText = "Copy link to clipboard"
+        this.copyJoinLink = document.createElement('button')
+        this.copyJoinLink.className = 'preparation button'
+        this.copyJoinLink.innerText = "Copy link to clipboard"
 
-        copyJoinLink.onclick = () => {
+        this.copyJoinLink.onclick = () => {
             copyToClipboard(this.joinLink.innerText)
         }
 
         this.userList = document.createElement('div')
         this.userList.className = 'preparation user_list'
 
-        const addPlayer = document.createElement('button')
-        addPlayer.className = 'preparation button'
-        addPlayer.innerText = "Add player"
+        this.addPlayer = document.createElement('button')
+        this.addPlayer.className = 'preparation button'
+        this.addPlayer.innerText = "Add player"
 
-        addPlayer.onclick = () => {
+        this.addPlayer.onclick = () => {
             this.postOrGoBack(this, "preparation/add_player")
         }
 
-        const removePlayer = document.createElement('button')
-        removePlayer.className = 'preparation button'
-        removePlayer.innerText = "Remove player"
+        this.removePlayer = document.createElement('button')
+        this.removePlayer.className = 'preparation button'
+        this.removePlayer.innerText = "Remove player"
 
-        removePlayer.onclick = () => {
+        this.removePlayer.onclick = () => {
             this.postOrGoBack(this, "preparation/remove_player", false)
         }
 
-        const leaveGame = document.createElement('button')
-        leaveGame.className = 'preparation button'
-        leaveGame.innerText = "Leave game"
+        this.userReady = document.createElement('button')
+        this.userReady.className = 'preparation button'
+        this.userReady.innerText = "Ready"
 
-        leaveGame.onclick = () => {
+        this.userReady.onclick = () => {
+            this.postOrGoBack(this, "preparation/user_ready")
+            this.container.removeChild(this.addPlayer)
+            this.container.removeChild(this.removePlayer)
+            this.container.removeChild(this.userReady)
+        }
+
+        this.startGame = document.createElement('button')
+        this.startGame.className = 'preparation button'
+        this.startGame.innerText = "Start game"
+
+        this.startGame.onclick = () => {
+        }
+
+        this.leaveGame = document.createElement('button')
+        this.leaveGame.className = 'preparation button'
+        this.leaveGame.innerText = "Leave game"
+
+        this.leaveGame.onclick = () => {
             this.restoreToWelcomeScreen()
         }
 
-        container.appendChild(this.usernameLabel)
-        container.appendChild(this.joinLink)
-        container.appendChild(copyJoinLink)
-        container.appendChild(this.userList)
-        container.appendChild(addPlayer)
-        container.appendChild(removePlayer)
-        container.appendChild(leaveGame)
-
-        this.ui.appendChild(container)
-
+        this.ui.appendChild(this.container)
         this.disable()
+    }
+
+    prepareTopDescription(self: PreparationScreen) {
+
     }
 
     restoreToWelcomeScreen() {
@@ -84,9 +104,21 @@ export class PreparationScreen extends Screen {
         this.joinLink.innerText = `${window.location.href}${gameID}`
         this.usernameLabel.innerText = `User: ${username}`
 
+        this.container.appendChild(this.usernameLabel)
+        this.container.appendChild(this.joinLink)
+        this.container.appendChild(this.copyJoinLink)
+        this.container.appendChild(this.userList)
+        this.container.appendChild(this.addPlayer)
+        this.container.appendChild(this.removePlayer)
+
         if (isHost()) {
+            this.container.appendChild(this.startGame)
             this.usernameLabel.innerText += ' (host)'
+        } else {
+            this.container.appendChild(this.userReady)
         }
+
+        this.container.appendChild(this.leaveGame)
 
         this.refresh(this)
         this.timerID = window.setInterval(this.refresh, 1000, this)
@@ -94,6 +126,11 @@ export class PreparationScreen extends Screen {
 
     disable() {
         super.disable()
+
+        while (this.container.firstChild) {
+            if (this.container.lastChild != null)
+                this.container.removeChild(this.container.lastChild);
+        }
         window.clearTimeout(this.timerID)
     }
 

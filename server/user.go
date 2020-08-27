@@ -75,3 +75,13 @@ func (u *User) ConstructPublicUser() *PublicUser {
 		IsHost:   u.IsHost,
 	}
 }
+
+// MarkReady sets ready to true.
+func (u *User) MarkReady() {
+	u.ready = true
+}
+
+// Ready tells whether user is ready.
+func (u *User) Ready() bool {
+	return u.ready
+}
