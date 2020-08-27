@@ -74,6 +74,17 @@ func (g *Game) HasUser(userID string) bool {
 	return ok
 }
 
+// GetUsersList gets the list of game users.
+func (g *Game) GetUsersList() []*PublicUser {
+	res := []*PublicUser{}
+
+	for _, u := range g.users {
+		res = append(res, u.ConstructPublicUser())
+	}
+
+	return res
+}
+
 func (g *Game) generateUsername() string {
 	for {
 		adjIdx, nounIdx := rand.Intn(len(adjectives)), rand.Intn(len(nouns))

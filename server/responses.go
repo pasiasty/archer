@@ -1,5 +1,10 @@
 package server
 
-// EmptyResponse is an empty struct.
-type EmptyResponse struct {
+// Empty is an empty struct.
+type Empty struct {
+}
+
+// UsersList contains list of Game users.
+type UsersList struct {
+	Users []*PublicUser
 }

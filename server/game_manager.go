@@ -24,6 +24,15 @@ func CreateGameManager() *GameManager {
 	}
 }
 
+// GetGame gets game with given ID.
+func (gm *GameManager) GetGame(gameID string) (*Game, error) {
+	game, ok := gm.games[gameID]
+	if !ok {
+		return nil, fmt.Errorf("failed to find game: %s", gameID)
+	}
+	return game, nil
+}
+
 // CreateGame creates new game and host user, returns host user.
 func (gm *GameManager) CreateGame() *User {
 	gm.mux.Lock()
@@ -40,9 +49,9 @@ func (gm *GameManager) CreateGame() *User {
 
 // JoinGame joins to game and creates new client user.
 func (gm *GameManager) JoinGame(gameID string) (*User, error) {
-	game, ok := gm.games[gameID]
-	if !ok {
-		return nil, fmt.Errorf("failed to find game: %s", gameID)
+	game, err := gm.GetGame(gameID)
+	if err != nil {
+		return nil, err
 	}
 
 	return game.AddClientUser(), nil

@@ -63,6 +63,7 @@ func App() *buffalo.App {
 		app.POST("/preparation/join_game", PreparationJoinGame)
 		app.POST("/preparation/user_ready", PreparationUserReady)
 		app.POST("/preparation/poll_game", PreparationPollGame)
+		app.POST("/preparation/list_users", PreparationListUsers)
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}
 

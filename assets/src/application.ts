@@ -21,8 +21,9 @@ $(() => {
 
     var gameID = getCookie("game_id")
     var userID = getCookie("user_id")
+    var username = getCookie("username")
 
-    if (gameID != "" && userID != "") {
+    if (gameID != "" && userID != "" && username != "") {
         ss.setCurrentScreen("preparation_screen")
     } else {
         ss.setCurrentScreen("welcome_screen")

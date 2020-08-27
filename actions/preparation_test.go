@@ -14,3 +14,6 @@ func (as *ActionSuite) Test_Preparation_UserReady() {
 
 func (as *ActionSuite) Test_Preparation_PollGame() {
 }
+
+func (as *ActionSuite) Test_Preparation_ListUsers() {
+}

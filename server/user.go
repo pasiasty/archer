@@ -12,6 +12,14 @@ type User struct {
 	UserID   string
 	Username string
 	IsHost   bool
+	ready    bool
+}
+
+// PublicUser contains public information of the user to be shared with other users.
+type PublicUser struct {
+	Username string
+	Ready    bool
+	IsHost   bool
 }
 
 // CreateUser creates new user.
@@ -30,4 +38,13 @@ func (u *User) StoreToCookie(c buffalo.Context) {
 	SetCookie(c, "user_id", u.UserID)
 	SetCookie(c, "username", u.Username)
 	SetCookie(c, "is_host", fmt.Sprintf("%v", u.IsHost))
+}
+
+// ConstructPublicUser returns public information of the user.
+func (u *User) ConstructPublicUser() *PublicUser {
+	return &PublicUser{
+		Username: u.Username,
+		Ready:    u.ready,
+		IsHost:   u.IsHost,
+	}
 }
