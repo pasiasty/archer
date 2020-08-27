@@ -7,7 +7,6 @@ import (
 	"io"
 	"math/rand"
 	"sync"
-	"time"
 )
 
 var (
@@ -21,46 +20,80 @@ type gameManager struct {
 	mux   sync.Mutex
 }
 
-func (gm *gameManager) createGame() string {
+func unifyGamesMap(m map[string]*game) map[string]bool {
+	res := map[string]bool{}
+
+	for k := range m {
+		res[k] = true
+	}
+
+	return res
+}
+
+func unifyUsersMap(m map[string]*user) map[string]bool {
+	res := map[string]bool{}
+
+	for k := range m {
+		res[k] = true
+	}
+
+	return res
+}
+
+func selectNewKey(m map[string]bool) string {
 	h := sha1.New()
-	io.WriteString(h, fmt.Sprintf("%d", rand.Intn(10000)))
 	for {
-		gm.mux.Lock()
+		io.WriteString(h, fmt.Sprintf("%d", rand.Intn(10000)))
 		res := base64.URLEncoding.EncodeToString(h.Sum(nil))
-		if _, ok := gm.games[res]; !ok {
-			host := &user{userID: 0}
-			gm.games[res] = &game{
-				host:  host,
-				users: []*user{host},
-			}
-			gm.mux.Unlock()
+
+		if _, ok := m[res]; !ok {
 			return res
 		}
-		gm.mux.Unlock()
-		time.Sleep(time.Microsecond)
 	}
 }
 
-func (gm *gameManager) joinGame(gameID string) int {
+func (gm *gameManager) createGame() (string, string) {
+	gm.mux.Lock()
+	defer gm.mux.Unlock()
+	newGameID := selectNewKey(unifyGamesMap(gm.games))
+	users := map[string]*user{}
+	newUserID := selectNewKey(unifyUsersMap(users))
+	host := &user{
+		userID: newUserID,
+	}
+	users[newUserID] = host
+
+	gm.games[newGameID] = &game{
+		host:  host,
+		users: users,
+	}
+
+	return newGameID, newUserID
+}
+
+func (gm *gameManager) joinGame(gameID string) (string, error) {
 	game, ok := gm.games[gameID]
 	if !ok {
-		return -1
+		return "", fmt.Errorf("failed to find game: %s", gameID)
 	}
 
 	game.mux.Lock()
 	defer game.mux.Unlock()
 
-	newUserID := len(game.users)
-	game.users = append(game.users, &user{userID: newUserID})
-	return newUserID
+	newUserID := selectNewKey(unifyUsersMap(game.users))
+	newUser := &user{
+		userID: newUserID,
+	}
+	game.users[newUserID] = newUser
+	return newUserID, nil
 }
 
 type game struct {
 	mux   sync.Mutex
 	host  *user
-	users []*user
+	users map[string]*user
 }
 
 type user struct {
-	userID int
+	userID string
 }

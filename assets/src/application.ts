@@ -6,6 +6,7 @@ import { WelcomeScreen } from "./welcome_screen"
 import { PreparationScreen } from "./preparation_screen"
 import { GameScreen } from "./game_screen"
 import { ScreenSelector } from "./screen_selector"
+import { getCookie } from "./utils"
 
 $(() => {
     var ss = new ScreenSelector()
@@ -18,6 +19,12 @@ $(() => {
     ss.addScreen(ps)
     ss.addScreen(game)
 
-    ss.setCurrentScreen("welcome_screen")
+    var gameID = getCookie("game_id")
+    var userID = getCookie("user_id")
 
+    if (gameID != "" && userID != "") {
+        ss.setCurrentScreen("preparation_screen")
+    } else {
+        ss.setCurrentScreen("welcome_screen")
+    }
 });

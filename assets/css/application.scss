@@ -25,6 +25,15 @@
 }
 
 .label {
+  display: block;
+  padding-top: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;
+  position: relative;
+  margin: 0 auto;
+  height: 80px;
+  font-size: 32px;
   background: red;
   color: white;
 }
@@ -34,21 +43,28 @@
   padding-bottom: 20px;
   position: relative;
   margin: 0 auto;
-  width: 500px;
   height: 80px;
   font-size: 32px;
 }
 
 .button {
+  display: block;
   padding-top: 20px;
   padding-bottom: 20px;
   position: relative;
   margin: 0 auto;
-  width: 500px;
   height: 80px;
   font-size: 32px;
   background: red;
   color: white;
+}
+
+.preparation {
+  width: 1000px;
+}
+
+.welcome {
+  width: 500px;
 }
 
 .ui_container {

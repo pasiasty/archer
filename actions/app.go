@@ -52,8 +52,12 @@ func App() *buffalo.App {
 		app.Use(translations())
 
 		app.GET("/", HomeHandler)
+		app.GET("/{game_id}", JoinHomeHandler)
 
 		app.POST("/preparation/create_game", PreparationCreateGame)
+		app.POST("/preparation/join_game", PreparationJoinGame)
+		app.POST("/preparation/user_ready", PreparationUserReady)
+		app.POST("/preparation/poll_game", PreparationPollGame)
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}
 
