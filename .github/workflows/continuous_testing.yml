@@ -8,8 +8,8 @@ on:
 
 jobs:
 
-  build:
-    name: Build
+  build_and_test:
+    name: Build and Test
     runs-on: ubuntu-latest
     steps:
 
@@ -35,14 +35,9 @@ jobs:
 
     - name: Build
       run: go build -v .
- 
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    steps:
+      
     - name: Test
       run: go test -v .
 
     - name: Test Buffalo
       run: buffalo test
-    needs: build
