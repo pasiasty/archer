@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-
-	. "github.com/markbates/grift/grift"
 )
 
 func execInShell(command string) error {
@@ -15,11 +13,10 @@ func execInShell(command string) error {
 	return cmd.Run()
 }
 
-var _ = Desc("coverage", "Task Description")
-var _ = Add("coverage", func(c *Context) error {
+func runCoverage(output string) error {
 	err := execInShell("buffalo test -coverprofile=c.out ./...")
 	if err != nil {
 		return fmt.Errorf("failed to run tests: %v", err)
 	}
-	return execInShell("go tool cover -func=c.out")
-})
+	return execInShell(fmt.Sprintf("go tool cover -%s=c.out", output))
+}
