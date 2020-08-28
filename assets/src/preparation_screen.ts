@@ -3,6 +3,9 @@ import { getCookie, copyToClipboard, isHost, deleteCookie, setCookie } from "./u
 import { ScreenSelector } from "./screen_selector"
 import { UsersList } from "./messages"
 
+const userListRefreshTimeout = 100
+const gameStartedRefreshTimeout = 100
+
 export class PreparationScreen extends Screen {
     joinLink: HTMLLabelElement
     usernameLabel: HTMLLabelElement
@@ -16,9 +19,11 @@ export class PreparationScreen extends Screen {
     addPlayer: HTMLButtonElement
     removePlayer: HTMLButtonElement
     leaveGame: HTMLButtonElement
+    enabled: boolean
 
     constructor(ss: ScreenSelector) {
         super("preparation_screen", ss)
+        this.enabled = false
 
         this.container = document.createElement('div')
         this.container.className = 'ui_container'
@@ -111,6 +116,7 @@ export class PreparationScreen extends Screen {
 
     enable() {
         super.enable()
+        this.enabled = true
         var gameID = getCookie("game_id")
         var username = getCookie("username")
         this.joinLink.innerText = `Game ID: ${gameID}`
@@ -133,14 +139,15 @@ export class PreparationScreen extends Screen {
         this.container.appendChild(this.leaveGame)
 
         this.refresh(this)
-        this.refreshTimerID = window.setInterval(this.refresh, 1000, this)
+        this.refreshTimerID = window.setTimeout(this.refresh, userListRefreshTimeout, this)
 
         if (!isHost())
-            this.gameStartedTimerID = window.setInterval(this.pollGameStatus, 1000, this)
+            this.gameStartedTimerID = window.setTimeout(this.pollGameStatus, gameStartedRefreshTimeout, this)
     }
 
     disable() {
         super.disable()
+        this.enabled = false
 
         while (this.container.firstChild) {
             if (this.container.lastChild != null)
@@ -182,7 +189,16 @@ export class PreparationScreen extends Screen {
     }
 
     refresh(self: PreparationScreen) {
-        self.postOrGoBack(self, "preparation/list_users")
+        var gameID = getCookie("game_id")
+        var userID = getCookie("user_id")
+
+        $.post("preparation/list_users", { "game_id": gameID, "user_id": userID }, (data: UsersList) => {
+            self.updateUsersList(data)
+            if (self.enabled)
+                self.refreshTimerID = window.setTimeout(self.refresh, userListRefreshTimeout, self)
+        }, "json").fail(() => {
+            self.restoreToWelcomeScreen()
+        })
     }
 
     pollGameStatus(self: PreparationScreen) {
@@ -193,6 +209,8 @@ export class PreparationScreen extends Screen {
                 setCookie("game_started", "true")
                 self.ss.setCurrentScreen("game_screen")
             }
+            if (self.enabled)
+                self.gameStartedTimerID = window.setTimeout(self.pollGameStatus, gameStartedRefreshTimeout, self)
         }, "json").fail(() => {
             self.restoreToWelcomeScreen()
         })

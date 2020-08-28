@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"log"
 	"sync"
 	"time"
 )
@@ -20,6 +21,7 @@ type GameManager struct {
 
 // CreateGameManager creates new GameManager.
 func CreateGameManager() *GameManager {
+	log.Print("Creating GameManager")
 	return &GameManager{
 		games: map[string]*Game{},
 	}

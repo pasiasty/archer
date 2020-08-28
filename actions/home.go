@@ -17,8 +17,8 @@ func JoinHomeHandler(c buffalo.Context) error {
 	gameID := c.Param("game_id")
 	user, err := gm.JoinGame(gameID)
 	if err != nil {
-		return err
+		return c.Error(http.StatusNotFound, err)
 	}
 	user.StoreToCookie(c)
-	return c.Redirect(307, "/")
+	return c.Redirect(http.StatusTemporaryRedirect, "/")
 }
