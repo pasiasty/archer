@@ -72,7 +72,7 @@ func (g *Game) Started() bool {
 // Start starts the game.
 func (g *Game) Start(c buffalo.Context, userID string) error {
 	if g.host.UserID != userID {
-		return c.Error(http.StatusNotFound, fmt.Errorf("user: %s is not a host and can't start the game: %s", userID, g.gameID))
+		return c.Error(http.StatusForbidden, fmt.Errorf("user: %s is not a host and can't start the game: %s", userID, g.gameID))
 	}
 	g.mux.Lock()
 	defer g.mux.Unlock()

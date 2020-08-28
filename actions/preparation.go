@@ -81,7 +81,7 @@ func PreparationStartGame(c buffalo.Context) error {
 	userID := c.Param("user_id")
 
 	if err := gm.StartGame(c, gameID, userID); err != nil {
-		return c.Error(http.StatusNotFound, err)
+		return err
 	}
 	return c.Render(http.StatusOK, r.JSON(server.Empty{}))
 }
@@ -92,7 +92,7 @@ func PreparationGameHasStarted(c buffalo.Context) error {
 
 	started, err := gm.GameHasStarted(c, gameID)
 	if err != nil {
-		return c.Error(http.StatusNotFound, err)
+		return err
 	}
 	return c.Render(http.StatusOK, r.JSON(started))
 }

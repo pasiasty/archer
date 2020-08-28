@@ -15,14 +15,19 @@ import (
 type ActionSuite struct {
 	*suite.Action
 	c buffalo.Context
+	u *server.User
+	g *server.Game
 }
 
 func (as *ActionSuite) BeforeTest(suiteName, testName string) {
 	envy.Set("GO_ENV", "test")
-	gm = server.CreateGameManager()
 	as.c = &buffalo.DefaultContext{
 		Context: context.Background(),
 	}
+
+	gm = server.CreateGameManager()
+	as.u = gm.CreateGame()
+	as.g, _ = gm.GetGame(as.c, as.u.GameID)
 }
 
 func (as *ActionSuite) ProperRequest(path string) *httptest.Request {
@@ -30,6 +35,13 @@ func (as *ActionSuite) ProperRequest(path string) *httptest.Request {
 	req.Headers["User-Agent"] = "Mozilla"
 	req.Headers["X-CSRF-Token"] = "test"
 	return req
+}
+
+func (as *ActionSuite) Request(path string, data map[string]interface{}, expRes int) *httptest.Response {
+	req := as.ProperRequest(path)
+	res := req.Post(data)
+	as.Equal(expRes, res.Code)
+	return res
 }
 
 func Test_ActionSuite(t *testing.T) {
