@@ -48,7 +48,7 @@ func PreparationAddPlayer(c buffalo.Context) error {
 	userID := c.Param("user_id")
 
 	if err := gm.AddPlayer(c, gameID, userID); err != nil {
-		return c.Error(http.StatusNotFound, err)
+		return err
 	}
 
 	return getUsersList(c, gameID)
@@ -60,7 +60,7 @@ func PreparationRemovePlayer(c buffalo.Context) error {
 	userID := c.Param("user_id")
 
 	if err := gm.RemovePlayer(c, gameID, userID); err != nil {
-		return c.Error(http.StatusNotFound, err)
+		return err
 	}
 
 	return getUsersList(c, gameID)

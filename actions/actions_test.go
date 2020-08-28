@@ -1,8 +1,10 @@
 package actions
 
 import (
+	"context"
 	"testing"
 
+	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/httptest"
 	"github.com/gobuffalo/packr/v2"
@@ -12,11 +14,15 @@ import (
 
 type ActionSuite struct {
 	*suite.Action
+	c buffalo.Context
 }
 
 func (as *ActionSuite) BeforeTest(suiteName, testName string) {
 	envy.Set("GO_ENV", "test")
 	gm = server.CreateGameManager()
+	as.c = &buffalo.DefaultContext{
+		Context: context.Background(),
+	}
 }
 
 func (as *ActionSuite) ProperRequest(path string) *httptest.Request {

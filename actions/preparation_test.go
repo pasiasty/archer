@@ -1,8 +1,11 @@
 package actions
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/pasiasty/archer/server"
 )
 
 var (
@@ -72,16 +75,103 @@ func (as *ActionSuite) Test_Preparation_UserReady() {
 }
 
 func (as *ActionSuite) Test_Preparation_ListUsers() {
+	u := gm.CreateGame()
+	gm.JoinGame(as.c, u.GameID)
+	gm.JoinGame(as.c, u.GameID)
+
+	ul := fetchUsersList(as, u.GameID)
+	as.Equal(3, len(ul.Users))
+
+	req := as.ProperRequest("/preparation/list_users")
+	res := req.Post(map[string]interface{}{"game_id": "abc"})
+	as.Equal(http.StatusNotFound, res.Code)
 }
 
 func (as *ActionSuite) Test_Preparation_AddPlayer() {
+	u := gm.CreateGame()
+
+	req := as.ProperRequest("/preparation/add_player")
+	res := req.Post(map[string]interface{}{"game_id": "abc"})
+	as.Equal(http.StatusNotFound, res.Code)
+
+	req = as.ProperRequest("/preparation/add_player")
+	res = req.Post(map[string]interface{}{"game_id": u.GameID, "user_id": "abc"})
+	as.Equal(http.StatusNotFound, res.Code)
+
+	ul := fetchUsersList(as, u.GameID)
+	as.Equal(1, len(ul.Users[0].Players))
+
+	req = as.ProperRequest("/preparation/add_player")
+	res = req.Post(map[string]interface{}{"game_id": u.GameID, "user_id": u.UserID})
+	as.Equal(http.StatusOK, res.Code)
+
+	ul = fetchUsersList(as, u.GameID)
+	as.Equal(2, len(ul.Users[0].Players))
+
+	req = as.ProperRequest("/preparation/add_player")
+	res = req.Post(map[string]interface{}{"game_id": u.GameID, "user_id": u.UserID})
+	as.Equal(http.StatusOK, res.Code)
+
+	ul = fetchUsersList(as, u.GameID)
+	as.Equal(3, len(ul.Users[0].Players))
+
+	u.MarkReady()
+
+	req = as.ProperRequest("/preparation/add_player")
+	res = req.Post(map[string]interface{}{"game_id": u.GameID, "user_id": u.UserID})
+	as.Equal(http.StatusForbidden, res.Code)
 }
 
 func (as *ActionSuite) Test_Preparation_RemovePlayer() {
+	u := gm.CreateGame()
+
+	req := as.ProperRequest("/preparation/remove_player")
+	res := req.Post(map[string]interface{}{"game_id": "abc"})
+	as.Equal(http.StatusNotFound, res.Code)
+
+	req = as.ProperRequest("/preparation/remove_player")
+	res = req.Post(map[string]interface{}{"game_id": u.GameID, "user_id": "abc"})
+	as.Equal(http.StatusNotFound, res.Code)
+
+	req = as.ProperRequest("/preparation/remove_player")
+	res = req.Post(map[string]interface{}{"game_id": u.GameID, "user_id": u.UserID})
+	as.Equal(http.StatusForbidden, res.Code)
+
+	req = as.ProperRequest("/preparation/add_player")
+	res = req.Post(map[string]interface{}{"game_id": u.GameID, "user_id": u.UserID})
+	as.Equal(http.StatusOK, res.Code)
+
+	req = as.ProperRequest("/preparation/add_player")
+	res = req.Post(map[string]interface{}{"game_id": u.GameID, "user_id": u.UserID})
+	as.Equal(http.StatusOK, res.Code)
+
+	req = as.ProperRequest("/preparation/remove_player")
+	res = req.Post(map[string]interface{}{"game_id": u.GameID, "user_id": u.UserID})
+	as.Equal(http.StatusOK, res.Code)
+
+	ul := fetchUsersList(as, u.GameID)
+	as.Equal(2, len(ul.Users[0].Players))
+
+	u.MarkReady()
+
+	req = as.ProperRequest("/preparation/remove_player")
+	res = req.Post(map[string]interface{}{"game_id": u.GameID, "user_id": u.UserID})
+	as.Equal(http.StatusForbidden, res.Code)
 }
 
 func (as *ActionSuite) Test_Preparation_StartGame() {
 }
 
 func (as *ActionSuite) Test_Preparation_GameHasStarted() {
+}
+
+func fetchUsersList(as *ActionSuite, gameID string) *server.UsersList {
+	req := as.ProperRequest("/preparation/list_users")
+	res := req.Post(map[string]interface{}{"game_id": gameID})
+	as.Equal(http.StatusOK, res.Code)
+
+	usersList := &server.UsersList{}
+	err := json.Unmarshal(res.ResponseRecorder.Body.Bytes(), usersList)
+	as.Equal(err, nil)
+	return usersList
 }

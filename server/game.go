@@ -123,7 +123,7 @@ func (g *Game) AddPlayer(c buffalo.Context, userID string) error {
 	}
 
 	if user.Ready() {
-		return c.Error(http.StatusNotFound, fmt.Errorf("can't add player to ready user: %s", user.UserID))
+		return c.Error(http.StatusForbidden, fmt.Errorf("can't add player to ready user: %s", user.UserID))
 	}
 
 	g.mux.Lock()
@@ -143,7 +143,7 @@ func (g *Game) RemovePlayer(c buffalo.Context, userID string) error {
 	}
 
 	if user.Ready() {
-		return c.Error(http.StatusNotFound, fmt.Errorf("can't remove player from ready user: %s", user.UserID))
+		return c.Error(http.StatusForbidden, fmt.Errorf("can't remove player from ready user: %s", user.UserID))
 	}
 
 	g.mux.Lock()
