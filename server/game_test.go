@@ -104,3 +104,19 @@ func Test_Game_AddingRemovingPlayers(t *testing.T) {
 		t.Errorf("removing player for ready user should fail")
 	}
 }
+
+func Test_Game_ExceedingMaxPlayers(t *testing.T) {
+	c := &buffalo.DefaultContext{
+		Context: context.Background(),
+	}
+
+	g := CreateGame("a", MaxPlayers(2))
+	host := g.AddHostUser()
+
+	if err := g.AddPlayer(c, host.UserID); err != nil {
+		t.Errorf("failed to add player: %v", err)
+	}
+	if err := g.AddPlayer(c, host.UserID); err == nil {
+		t.Errorf("exceeding max players should fail.")
+	}
+}

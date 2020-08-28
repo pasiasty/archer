@@ -53,14 +53,39 @@ type Game struct {
 	started        bool
 	users          map[string]*User
 	usernamesToIDs map[string]string
+	world          *World
+	maxPlayers     int
+}
+
+type gameOpts struct {
+	maxPlayers int
+}
+
+// GameOption might be used for configuring game.
+type GameOption func(*gameOpts)
+
+// MaxPlayers overrides default max number of game players.
+func MaxPlayers(max int) GameOption {
+	return func(o *gameOpts) {
+		o.maxPlayers = max
+	}
 }
 
 // CreateGame creates new instance of the game.
-func CreateGame(gameID string) *Game {
+func CreateGame(gameID string, opts ...GameOption) *Game {
+	opt := gameOpts{
+		maxPlayers: maxPlayers,
+	}
+
+	for _, o := range opts {
+		o(&opt)
+	}
+
 	return &Game{
 		gameID:         gameID,
 		users:          map[string]*User{},
 		usernamesToIDs: map[string]string{},
+		maxPlayers:     opt.maxPlayers,
 	}
 }
 
@@ -81,6 +106,12 @@ func (g *Game) Start(c buffalo.Context, userID string) error {
 		return nil
 	}
 
+	var players []string
+	for p := range g.usernamesToIDs {
+		players = append(players, p)
+	}
+
+	g.world = CreateWorld(players)
 	g.started = true
 	return nil
 }
@@ -124,6 +155,10 @@ func (g *Game) AddPlayer(c buffalo.Context, userID string) error {
 
 	if user.Ready() {
 		return c.Error(http.StatusForbidden, fmt.Errorf("can't add player to ready user: %s", user.UserID))
+	}
+
+	if len(g.usernamesToIDs) >= g.maxPlayers {
+		return c.Error(http.StatusForbidden, fmt.Errorf("can't add more then %d players", g.maxPlayers))
 	}
 
 	g.mux.Lock()
