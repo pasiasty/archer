@@ -13,5 +13,6 @@ require (
 	github.com/gobuffalo/packr/v2 v2.8.0
 	github.com/gobuffalo/suite v2.8.2+incompatible
 	github.com/google/go-cmp v0.4.0
+	github.com/markbates/grift v1.5.0
 	github.com/unrolled/secure v1.0.8
 )

@@ -60,3 +60,14 @@ func TestRemovePlayer(t *testing.T) {
 		t.Errorf("Removing should return error")
 	}
 }
+
+func TestUserReady(t *testing.T) {
+	u := CreateUser("", "", "", false)
+	if u.Ready() {
+		t.Error("user should not be ready yet.")
+	}
+	u.MarkReady()
+	if !u.Ready() {
+		t.Error("user should be ready now.")
+	}
+}

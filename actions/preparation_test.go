@@ -54,6 +54,21 @@ func (as *ActionSuite) Test_Preparation_JoinGame() {
 }
 
 func (as *ActionSuite) Test_Preparation_UserReady() {
+	u := gm.CreateGame()
+	gameID := u.GameID
+	userID := u.UserID
+
+	req := as.ProperRequest("/preparation/user_ready")
+	res := req.Post(map[string]interface{}{"game_id": "abc"})
+	as.Equal(http.StatusNotFound, res.Code)
+
+	req = as.ProperRequest("/preparation/user_ready")
+	res = req.Post(map[string]interface{}{"game_id": gameID, "user_id": "abc"})
+	as.Equal(http.StatusNotFound, res.Code)
+
+	req = as.ProperRequest("/preparation/user_ready")
+	res = req.Post(map[string]interface{}{"game_id": gameID, "user_id": userID})
+	as.Equal(http.StatusOK, res.Code)
 }
 
 func (as *ActionSuite) Test_Preparation_ListUsers() {
