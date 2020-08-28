@@ -24,14 +24,13 @@ $(() => {
     var username = getCookie("username")
     var gameStarted = getCookie("game_started")
 
-    ss.setCurrentScreen("game_screen")
-    // if (gameID != "" && userID != "" && username != "") {
-    //     if (gameStarted == "true") {
-    //         ss.setCurrentScreen("game_screen")
-    //     }
-    //     else
-    //         ss.setCurrentScreen("preparation_screen")
-    // } else {
-    //     ss.setCurrentScreen("welcome_screen")
-    // }
+    if (gameID != "" && userID != "" && username != "") {
+        if (gameStarted == "true") {
+            ss.setCurrentScreen("game_screen")
+        }
+        else
+            ss.setCurrentScreen("preparation_screen")
+    } else {
+        ss.setCurrentScreen("welcome_screen")
+    }
 });
