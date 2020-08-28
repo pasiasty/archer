@@ -1,7 +1,10 @@
 package server
 
 import (
+	"context"
 	"testing"
+
+	"github.com/gobuffalo/buffalo"
 
 	"github.com/google/go-cmp/cmp"
 )
@@ -26,6 +29,10 @@ func TestAddPlayer(t *testing.T) {
 }
 
 func TestRemovePlayer(t *testing.T) {
+	c := &buffalo.DefaultContext{
+		Context: context.Background(),
+	}
+
 	u := CreateUser("game", "user", "a", false)
 	u.AddPlayer("b")
 	u.AddPlayer("c")
@@ -33,7 +40,7 @@ func TestRemovePlayer(t *testing.T) {
 	if diff := cmp.Diff([]string{"a", "b", "c"}, u.Players); diff != "" {
 		t.Errorf("Wrong value of players, diff: %s", diff)
 	}
-	if removed, _ := u.RemovePlayer(); removed != "c" {
+	if removed, _ := u.RemovePlayer(c); removed != "c" {
 		t.Errorf("Wrong name of removed player, want: %s got: %s", "c", removed)
 	}
 
@@ -41,7 +48,7 @@ func TestRemovePlayer(t *testing.T) {
 		t.Errorf("Wrong value of players, diff: %s", diff)
 	}
 
-	if removed, _ := u.RemovePlayer(); removed != "b" {
+	if removed, _ := u.RemovePlayer(c); removed != "b" {
 		t.Errorf("Wrong name of removed player, want: %s got: %s", "b", removed)
 	}
 
@@ -49,7 +56,7 @@ func TestRemovePlayer(t *testing.T) {
 		t.Errorf("Wrong value of players, diff: %s", diff)
 	}
 
-	if _, err := u.RemovePlayer(); err == nil {
+	if _, err := u.RemovePlayer(c); err == nil {
 		t.Errorf("Removing should return error")
 	}
 }

@@ -3,7 +3,10 @@ package server
 import (
 	"fmt"
 	"math/rand"
+	"net/http"
 	"sync"
+
+	"github.com/gobuffalo/buffalo"
 )
 
 var (
@@ -67,9 +70,9 @@ func (g *Game) Started() bool {
 }
 
 // Start starts the game.
-func (g *Game) Start(userID string) error {
+func (g *Game) Start(c buffalo.Context, userID string) error {
 	if g.host.UserID != userID {
-		return fmt.Errorf("user: %s is not a host and can't start the game: %s", userID, g.gameID)
+		return c.Error(http.StatusNotFound, fmt.Errorf("user: %s is not a host and can't start the game: %s", userID, g.gameID))
 	}
 	g.mux.Lock()
 	defer g.mux.Unlock()
@@ -93,10 +96,10 @@ func (g *Game) AddClientUser() *User {
 }
 
 // GetUser gets selected user.
-func (g *Game) GetUser(userID string) (*User, error) {
+func (g *Game) GetUser(c buffalo.Context, userID string) (*User, error) {
 	user, ok := g.users[userID]
 	if !ok {
-		return nil, fmt.Errorf("failed to get user %s from game %s", userID, g.gameID)
+		return nil, c.Error(http.StatusNotFound, fmt.Errorf("failed to get user %s from game %s", userID, g.gameID))
 	}
 	return user, nil
 }
@@ -113,14 +116,14 @@ func (g *Game) GetUsersList() []*PublicUser {
 }
 
 // AddPlayer ads another player to selected user.
-func (g *Game) AddPlayer(userID string) error {
-	user, err := g.GetUser(userID)
+func (g *Game) AddPlayer(c buffalo.Context, userID string) error {
+	user, err := g.GetUser(c, userID)
 	if err != nil {
 		return err
 	}
 
 	if user.Ready() {
-		return fmt.Errorf("can't add player to ready user: %s", user.UserID)
+		return c.Error(http.StatusNotFound, fmt.Errorf("can't add player to ready user: %s", user.UserID))
 	}
 
 	g.mux.Lock()
@@ -133,20 +136,20 @@ func (g *Game) AddPlayer(userID string) error {
 }
 
 // RemovePlayer removes player from selected user.
-func (g *Game) RemovePlayer(userID string) error {
-	user, err := g.GetUser(userID)
+func (g *Game) RemovePlayer(c buffalo.Context, userID string) error {
+	user, err := g.GetUser(c, userID)
 	if err != nil {
 		return err
 	}
 
 	if user.Ready() {
-		return fmt.Errorf("can't remove player from ready user: %s", user.UserID)
+		return c.Error(http.StatusNotFound, fmt.Errorf("can't remove player from ready user: %s", user.UserID))
 	}
 
 	g.mux.Lock()
 	defer g.mux.Unlock()
 
-	name, err := user.RemovePlayer()
+	name, err := user.RemovePlayer(c)
 	if err != nil {
 		return err
 	}
@@ -195,8 +198,8 @@ func unifyUsersMap(m map[string]*User) map[string]bool {
 }
 
 // MarkUserReady marks selected user as ready.
-func (g *Game) MarkUserReady(userID string) error {
-	user, err := g.GetUser(userID)
+func (g *Game) MarkUserReady(c buffalo.Context, userID string) error {
+	user, err := g.GetUser(c, userID)
 	if err != nil {
 		return err
 	}

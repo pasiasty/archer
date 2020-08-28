@@ -3,8 +3,11 @@ package server
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"sync"
 	"time"
+
+	"github.com/gobuffalo/buffalo"
 )
 
 var (
@@ -28,10 +31,10 @@ func CreateGameManager() *GameManager {
 }
 
 // GetGame gets game with given ID.
-func (gm *GameManager) GetGame(gameID string) (*Game, error) {
+func (gm *GameManager) GetGame(c buffalo.Context, gameID string) (*Game, error) {
 	game, ok := gm.games[gameID]
 	if !ok {
-		return nil, fmt.Errorf("failed to find game: %s", gameID)
+		return nil, c.Error(http.StatusNotFound, fmt.Errorf("failed to find game: %s", gameID))
 	}
 	return game, nil
 }
@@ -61,33 +64,33 @@ func (gm *GameManager) removeGame(gameID string) {
 }
 
 // JoinGame joins to game and creates new client user.
-func (gm *GameManager) JoinGame(gameID string) (*User, error) {
-	game, err := gm.GetGame(gameID)
+func (gm *GameManager) JoinGame(c buffalo.Context, gameID string) (*User, error) {
+	game, err := gm.GetGame(c, gameID)
 	if err != nil {
-		return nil, err
+		return nil, c.Error(http.StatusNotFound, err)
 	}
 
 	return game.AddClientUser(), nil
 }
 
 // AddPlayer adds another player to selected user and game.
-func (gm *GameManager) AddPlayer(gameID, userID string) error {
-	game, err := gm.GetGame(gameID)
+func (gm *GameManager) AddPlayer(c buffalo.Context, gameID, userID string) error {
+	game, err := gm.GetGame(c, gameID)
 	if err != nil {
 		return err
 	}
 
-	return game.AddPlayer(userID)
+	return game.AddPlayer(c, userID)
 }
 
 // RemovePlayer removes player from selected user and game.
-func (gm *GameManager) RemovePlayer(gameID, userID string) error {
-	game, err := gm.GetGame(gameID)
+func (gm *GameManager) RemovePlayer(c buffalo.Context, gameID, userID string) error {
+	game, err := gm.GetGame(c, gameID)
 	if err != nil {
 		return err
 	}
 
-	return game.RemovePlayer(userID)
+	return game.RemovePlayer(c, userID)
 }
 
 func unifyGamesMap(m map[string]*Game) map[string]bool {
@@ -101,26 +104,26 @@ func unifyGamesMap(m map[string]*Game) map[string]bool {
 }
 
 // MarkUserReady marks selected user as ready.
-func (gm *GameManager) MarkUserReady(gameID, userID string) error {
-	game, err := gm.GetGame(gameID)
+func (gm *GameManager) MarkUserReady(c buffalo.Context, gameID, userID string) error {
+	game, err := gm.GetGame(c, gameID)
 	if err != nil {
 		return err
 	}
-	return game.MarkUserReady(userID)
+	return game.MarkUserReady(c, userID)
 }
 
 // StartGame starts the game.
-func (gm *GameManager) StartGame(gameID, userID string) error {
-	game, err := gm.GetGame(gameID)
+func (gm *GameManager) StartGame(c buffalo.Context, gameID, userID string) error {
+	game, err := gm.GetGame(c, gameID)
 	if err != nil {
 		return err
 	}
-	return game.Start(userID)
+	return game.Start(c, userID)
 }
 
 // GameHasStarted tells whether game has started.
-func (gm *GameManager) GameHasStarted(gameID string) (bool, error) {
-	game, err := gm.GetGame(gameID)
+func (gm *GameManager) GameHasStarted(c buffalo.Context, gameID string) (bool, error) {
+	game, err := gm.GetGame(c, gameID)
 	if err != nil {
 		return false, err
 	}

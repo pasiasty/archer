@@ -17,9 +17,9 @@ func PreparationCreateGame(c buffalo.Context) error {
 // PreparationJoinGame default implementation.
 func PreparationJoinGame(c buffalo.Context) error {
 	gameID := c.Param("game_id")
-	user, err := gm.JoinGame(gameID)
+	user, err := gm.JoinGame(c, gameID)
 	if err != nil {
-		return c.Error(http.StatusNotFound, err)
+		return err
 	}
 	user.StoreToCookie(c)
 	return c.Render(http.StatusOK, r.JSON(server.Empty{}))
@@ -30,8 +30,8 @@ func PreparationUserReady(c buffalo.Context) error {
 	gameID := c.Param("game_id")
 	userID := c.Param("user_id")
 
-	if err := gm.MarkUserReady(gameID, userID); err != nil {
-		return c.Error(http.StatusNotFound, err)
+	if err := gm.MarkUserReady(c, gameID, userID); err != nil {
+		return err
 	}
 	return getUsersList(c, gameID)
 }
@@ -47,7 +47,7 @@ func PreparationAddPlayer(c buffalo.Context) error {
 	gameID := c.Param("game_id")
 	userID := c.Param("user_id")
 
-	if err := gm.AddPlayer(gameID, userID); err != nil {
+	if err := gm.AddPlayer(c, gameID, userID); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 
@@ -59,7 +59,7 @@ func PreparationRemovePlayer(c buffalo.Context) error {
 	gameID := c.Param("game_id")
 	userID := c.Param("user_id")
 
-	if err := gm.RemovePlayer(gameID, userID); err != nil {
+	if err := gm.RemovePlayer(c, gameID, userID); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 
@@ -67,9 +67,9 @@ func PreparationRemovePlayer(c buffalo.Context) error {
 }
 
 func getUsersList(c buffalo.Context, gameID string) error {
-	game, err := gm.GetGame(gameID)
+	game, err := gm.GetGame(c, gameID)
 	if err != nil {
-		return c.Error(http.StatusNotFound, err)
+		return err
 	}
 
 	return c.Render(http.StatusOK, r.JSON(server.UsersList{Users: game.GetUsersList()}))
@@ -80,7 +80,7 @@ func PreparationStartGame(c buffalo.Context) error {
 	gameID := c.Param("game_id")
 	userID := c.Param("user_id")
 
-	if err := gm.StartGame(gameID, userID); err != nil {
+	if err := gm.StartGame(c, gameID, userID); err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
 	return c.Render(http.StatusOK, r.JSON(server.Empty{}))
@@ -90,7 +90,7 @@ func PreparationStartGame(c buffalo.Context) error {
 func PreparationGameHasStarted(c buffalo.Context) error {
 	gameID := c.Param("game_id")
 
-	started, err := gm.GameHasStarted(gameID)
+	started, err := gm.GameHasStarted(c, gameID)
 	if err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}

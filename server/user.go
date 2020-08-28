@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"net/http"
 	"sync"
 
 	"github.com/gobuffalo/buffalo"
@@ -45,12 +46,12 @@ func (u *User) AddPlayer(name string) {
 }
 
 // RemovePlayer adds another player to the user.
-func (u *User) RemovePlayer() (string, error) {
+func (u *User) RemovePlayer(c buffalo.Context) (string, error) {
 	u.mux.Lock()
 	defer u.mux.Unlock()
 
 	if len(u.Players) <= 1 {
-		return "", fmt.Errorf("no extra players on user: %s", u.UserID)
+		return "", c.Error(http.StatusForbidden, fmt.Errorf("no extra players on user: %s", u.UserID))
 	}
 	lastPlayer := u.Players[len(u.Players)-1]
 	u.Players[len(u.Players)-1] = ""

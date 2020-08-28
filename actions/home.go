@@ -15,7 +15,7 @@ func HomeHandler(c buffalo.Context) error {
 // JoinHomeHandler lets to join the game.
 func JoinHomeHandler(c buffalo.Context) error {
 	gameID := c.Param("game_id")
-	user, err := gm.JoinGame(gameID)
+	user, err := gm.JoinGame(c, gameID)
 	if err != nil {
 		return c.Error(http.StatusNotFound, err)
 	}
