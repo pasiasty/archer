@@ -69,6 +69,7 @@ func App() *buffalo.App {
 		app.POST("/preparation/start_game", PreparationStartGame)
 		app.POST("/preparation/game_has_started", PreparationGameHasStarted)
 
+		app.POST("/game/get_world", GameGetWorld)
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}
 

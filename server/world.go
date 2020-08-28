@@ -1,6 +1,7 @@
 package server
 
 import (
+	"errors"
 	"math"
 	"math/rand"
 )
@@ -19,12 +20,19 @@ type PublicWorld struct {
 
 // CreateWorld creates new world.
 func CreateWorld(players []string) *World {
-	extraPlanets := 3 + rand.Intn(5)
+	extraPlanets := 2 + rand.Intn(3)
 	numOfPlanets := len(players) + extraPlanets
 	res := &World{}
 
-	for idx := 0; idx < numOfPlanets; idx++ {
-		res.addPlanet()
+	fullnesRatio := float32(math.Pow(maxPlayers/float64(len(players)), 0.5))
+
+	for done := 0; done < numOfPlanets; {
+		if err := res.addPlanet(fullnesRatio); err != nil {
+			done = 0
+			res.planets = nil
+			continue
+		}
+		done++
 	}
 
 	rand.Shuffle(len(players), func(i, j int) { players[i], players[j] = players[j], players[i] })
@@ -35,20 +43,28 @@ func CreateWorld(players []string) *World {
 	return res
 }
 
-func (w *World) addPlanet() {
-	for {
-		newPoint := RandomPoint()
+func (w *World) addPlanet(fullnesRatio float32) error {
+	for counter := 0; counter < 32; counter++ {
 		newRadius := minRadius + rand.Float32()*(maxRadius-minRadius)
+		newRadius *= fullnesRatio
+		newPoint := RandomPoint(newRadius + minPlanetDistance)
+
+		wrong := false
 
 		for _, p := range w.planets {
 			dist := newPoint.Distance(p.Location)
 			if dist < (newRadius + p.Radius + minPlanetDistance) {
+				wrong = true
 				break
 			}
 		}
-		w.planets = append(w.planets, CreatePlanet(newPoint, newRadius))
-		return
+
+		if !wrong {
+			w.planets = append(w.planets, CreatePlanet(newPoint, newRadius))
+			return nil
+		}
 	}
+	return errors.New("tried too many times")
 }
 
 // GetPublicWorld constructs PublicWorld from World.
