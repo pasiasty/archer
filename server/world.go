@@ -20,7 +20,7 @@ type PublicWorld struct {
 
 // CreateWorld creates new world.
 func CreateWorld(players []string) *World {
-	extraPlanets := 2 + rand.Intn(3)
+	extraPlanets := 2 + rand.Intn(2)
 	numOfPlanets := len(players) + extraPlanets
 	res := &World{}
 

@@ -9,7 +9,7 @@ import (
 
 // GameGetWorld default implementation.
 func GameGetWorld(c buffalo.Context) error {
-	players := []string{"", ""}
+	players := []string{"", "", "", ""}
 	w := server.CreateWorld(players)
 	return c.Render(http.StatusOK, r.JSON(w.GetPublicWorld()))
 }
