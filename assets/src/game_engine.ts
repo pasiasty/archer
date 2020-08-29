@@ -7,6 +7,7 @@ import { Planet } from "./planet"
 export class GameEngine extends ex.Engine {
     constructor() {
         super({
+            canvasElementId: "game_screen",
             pointerScope: PointerScope.Canvas,
             displayMode: ex.DisplayMode.Fixed,
             width: 1920,
@@ -17,6 +18,7 @@ export class GameEngine extends ex.Engine {
     }
 
     run() {
+        console.log(this.drawWidth, this.canvasWidth)
         this.start(res.loader).then(() => {
             var background = new ex.Actor(this.halfDrawWidth, this.halfDrawHeight)
             background.addDrawing(res.Images.sky)
