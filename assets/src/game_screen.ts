@@ -4,6 +4,7 @@ import { ScreenSelector } from "./screen_selector"
 import * as msgs from "./messages"
 import { PointerScope } from "excalibur/dist/Input/Index"
 import { DrawUtil } from "excalibur/dist/Util/Index"
+import { GameEngine } from "./game_engine"
 
 class Planet extends ex.Actor {
     p: msgs.Planet
@@ -18,34 +19,18 @@ class Planet extends ex.Actor {
 }
 
 export class GameScreen extends Screen {
-    game: ex.Engine
+    game: GameEngine
 
     constructor(ss: ScreenSelector) {
         super("game_screen", ss)
 
-        this.game = new ex.Engine({
-            pointerScope: PointerScope.Canvas,
-            displayMode: ex.DisplayMode.FullScreen,
-            width: 1680,
-            height: 1050,
-            backgroundColor: ex.Color.Blue,
-        })
-
+        this.game = new GameEngine()
         this.disable()
     }
 
     enable() {
         super.enable()
-        this.game.start()
-
-        $.post("/game/get_world", (data: msgs.PublicWorld) => {
-            for (let p of data.Planets) {
-                console.log("planet", p.Location.X, p.Location.Y, p.Radius)
-                this.game.add(new Planet(p))
-            }
-        }, "json").fail(() => {
-            alert("failed to get world")
-        })
+        this.game.run()
     }
 
     disable() {
