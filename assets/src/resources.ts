@@ -2,6 +2,7 @@ import * as ex from "excalibur";
 
 const Images: { [key: string]: ex.Texture } = {
     sky: new ex.Texture('/public/assets/images/sky.jpg'),
+    player: new ex.Texture('/public/assets/images/player.png'),
 };
 
 const PlanetImages: ex.Texture[] = [

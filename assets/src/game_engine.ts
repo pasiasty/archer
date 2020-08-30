@@ -29,6 +29,14 @@ export class GameEngine extends ex.Engine {
                     console.log("planet", p.Location.X, p.Location.Y, p.Radius)
                     this.add(new Planet(p))
                 }
+
+                var player = new ex.Actor(data.Planets[0].Location.X, data.Planets[0].Location.Y)
+                var playerSprite = res.Images.player.asSprite().clone()
+                playerSprite.scale = new ex.Vector(0.1, 0.1)
+                playerSprite.offset = new ex.Vector(0, 25 + data.Planets[0].Radius)
+                player.addDrawing(playerSprite)
+                player.rotation = 1.5
+                this.add(player)
             }, "json").fail(() => {
                 alert("failed to get world")
             })
