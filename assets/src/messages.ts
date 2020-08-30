@@ -29,11 +29,13 @@ export class Planet {
     Location: Point
     Radius: number
     Mass: number
+    ResourceID: number
 
     constructor() {
         this.Location = new Point()
         this.Radius = 0
         this.Mass = 0
+        this.ResourceID = 0
     }
 }
 
