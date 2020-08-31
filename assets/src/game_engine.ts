@@ -5,7 +5,8 @@ import * as res from "./resources"
 import { Planet } from "./planet"
 import { Player } from "./player"
 import { Cursor } from "./cursor"
-import { getCookie } from "./utils"
+import { getCookie, deleteCookie } from "./utils"
+import { ScreenSelector } from "./screen_selector"
 
 export class GameEngine extends ex.Engine {
     players: Map<string, Player>
@@ -14,8 +15,10 @@ export class GameEngine extends ex.Engine {
     myTurn: boolean
     planets: Map<number, Planet>
     cursor: Cursor
+    label: ex.Label
+    ss: ScreenSelector
 
-    constructor() {
+    constructor(ss: ScreenSelector) {
         super({
             canvasElementId: "game_screen",
             pointerScope: PointerScope.Canvas,
@@ -26,12 +29,23 @@ export class GameEngine extends ex.Engine {
             suppressPlayButton: true,
         })
 
+        this.ss = ss
         this.players = new Map<string, Player>()
         this.localPlayers = new Set<string>()
         this.planets = new Map<number, Planet>()
         this.myTurn = false
         this.cursor = new Cursor(this)
         this.currentPlayer = ""
+
+        this.label = new ex.Label('Current player:', 0, 40)
+        this.label.color = ex.Color.White
+        this.label.fontFamily = 'Arial'
+        this.label.fontSize = 40
+        this.label.fontUnit = ex.FontUnit.Px
+        this.label.textAlign = ex.TextAlign.Left
+
+        this.add(this.label)
+        this.label.setZIndex(50)
     }
 
     run() {
@@ -57,7 +71,7 @@ export class GameEngine extends ex.Engine {
                     this.players.set(p.Name, new Player(planet, p.Alpha, p.ColorIdx))
                 }
             }, "json").fail(() => {
-                alert("failed to get world")
+                this.restoreToWelcomeScreen()
             })
 
             $.post("/preparation/list_users", { "game_id": gameID }, (data: msgs.UsersList) => {
@@ -69,7 +83,7 @@ export class GameEngine extends ex.Engine {
                     }
                 }
             }, "json").fail(() => {
-                alert("failed to get users_list")
+                this.restoreToWelcomeScreen()
             })
         })
     }
@@ -89,25 +103,39 @@ export class GameEngine extends ex.Engine {
 
         if (!this.myTurn) {
             $.post("/game/poll_turn", { "game_id": gameID }, (data: msgs.PollTurn) => {
+                this.label.text = `Current player: ${data.CurrentPlayer}`
                 if (this.localPlayers.has(data.CurrentPlayer)) {
                     this.myTurn = true
                     this.enableCursor()
                     this.players.get(data.CurrentPlayer)?.activate()
                     this.currentPlayer = data.CurrentPlayer
+                    this.label.color = ex.Color.Green
                 } else {
                     var currentPlayer = this.players.get(data.CurrentPlayer)
                     if (currentPlayer != null) {
                         currentPlayer.rotation = data.CurrentPlayerAlpha
                     }
+                    this.label.color = ex.Color.White
                 }
             }, "json").fail(() => {
-                alert("failed to post poll_turn")
+                this.restoreToWelcomeScreen()
             })
         } else {
             var newAlpha = this.players.get(this.currentPlayer)?.rotation
             $.post("/game/move", { "game_id": gameID, "user_id": userID, "username": this.currentPlayer, "new_alpha": newAlpha }, null, "json").fail(() => {
-                alert("failed to post move")
+                this.restoreToWelcomeScreen()
             })
         }
+
+        if (this.input.keyboard.isHeld(ex.Input.Keys.Esc))
+            this.restoreToWelcomeScreen()
+    }
+
+    restoreToWelcomeScreen() {
+        deleteCookie("game_id")
+        deleteCookie("user_id")
+        deleteCookie("username")
+        deleteCookie("is_host")
+        this.ss.setCurrentScreen("welcome_screen")
     }
 }

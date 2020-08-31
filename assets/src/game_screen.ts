@@ -24,7 +24,7 @@ export class GameScreen extends Screen {
     constructor(ss: ScreenSelector) {
         super("game_screen", ss)
 
-        this.game = new GameEngine()
+        this.game = new GameEngine(ss)
         this.disable()
     }
 
