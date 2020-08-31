@@ -5,7 +5,7 @@ import * as res from "./resources"
 import { Planet } from "./planet"
 import { Player } from "./player"
 import { Cursor } from "./cursor"
-import { getCookie, deleteCookie } from "./utils"
+import { getCookie } from "./utils"
 import { ScreenSelector } from "./screen_selector"
 
 const watchMoveInterval = 20
@@ -52,8 +52,8 @@ export class GameEngine extends ex.Engine {
             fcn: () => {
                 this.pollTurn()
             },
+            repeats: true,
         })
-        this.timer.repeats = true
 
         this.add(this.label)
         this.label.setZIndex(50)
@@ -79,7 +79,7 @@ export class GameEngine extends ex.Engine {
                     var planet = this.planets.get(p.PlanetID)
                     if (planet == null)
                         continue
-                    this.players.set(p.Name, new Player(planet, p.Alpha, p.ColorIdx))
+                    this.players.set(p.Name, new Player(p.Name, planet, p.Alpha, p.ColorIdx, this.ss, this))
                 }
             }, "json").fail(() => {
                 this.ss.restoreToWelcomeScreen()
@@ -119,7 +119,6 @@ export class GameEngine extends ex.Engine {
 
     pollTurn() {
         var gameID = getCookie("game_id")
-        var userID = getCookie("user_id")
 
         if (!this.myTurn) {
             $.post("/game/poll_turn", { "game_id": gameID }, (data: msgs.PollTurn) => {
@@ -134,11 +133,6 @@ export class GameEngine extends ex.Engine {
                     this.label.color = ex.Color.White
                 }
             }, "json").fail(() => {
-                this.ss.restoreToWelcomeScreen()
-            })
-        } else {
-            var newAlpha = this.players.get(this.currentPlayer)?.rotation
-            $.post("/game/move", { "game_id": gameID, "user_id": userID, "username": this.currentPlayer, "new_alpha": newAlpha }, null, "json").fail(() => {
                 this.ss.restoreToWelcomeScreen()
             })
         }
