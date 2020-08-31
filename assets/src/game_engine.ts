@@ -8,6 +8,8 @@ import { Cursor } from "./cursor"
 import { getCookie, deleteCookie } from "./utils"
 import { ScreenSelector } from "./screen_selector"
 
+const watchMoveInterval = 20
+
 export class GameEngine extends ex.Engine {
     players: Map<string, Player>
     localPlayers: Set<string>
@@ -17,6 +19,7 @@ export class GameEngine extends ex.Engine {
     cursor: Cursor
     label: ex.Label
     ss: ScreenSelector
+    timer: ex.Timer
 
     constructor(ss: ScreenSelector) {
         super({
@@ -43,6 +46,14 @@ export class GameEngine extends ex.Engine {
         this.label.fontSize = 40
         this.label.fontUnit = ex.FontUnit.Px
         this.label.textAlign = ex.TextAlign.Left
+
+        this.timer = new ex.Timer({
+            interval: watchMoveInterval,
+            fcn: () => {
+                this.pollTurn()
+            },
+        })
+        this.timer.repeats = true
 
         this.add(this.label)
         this.label.setZIndex(50)
@@ -71,7 +82,7 @@ export class GameEngine extends ex.Engine {
                     this.players.set(p.Name, new Player(planet, p.Alpha, p.ColorIdx))
                 }
             }, "json").fail(() => {
-                this.restoreToWelcomeScreen()
+                this.ss.restoreToWelcomeScreen()
             })
 
             $.post("/preparation/list_users", { "game_id": gameID }, (data: msgs.UsersList) => {
@@ -82,8 +93,9 @@ export class GameEngine extends ex.Engine {
                         }
                     }
                 }
+                this.add(this.timer)
             }, "json").fail(() => {
-                this.restoreToWelcomeScreen()
+                this.ss.restoreToWelcomeScreen()
             })
         })
     }
@@ -97,7 +109,15 @@ export class GameEngine extends ex.Engine {
         this.remove(this.cursor)
     }
 
-    onPreUpdate() {
+    takeTurn(currentPlayer: string) {
+        this.myTurn = true
+        this.enableCursor()
+        this.players.get(currentPlayer)?.activate()
+        this.currentPlayer = currentPlayer
+        this.label.color = ex.Color.Green
+    }
+
+    pollTurn() {
         var gameID = getCookie("game_id")
         var userID = getCookie("user_id")
 
@@ -105,11 +125,7 @@ export class GameEngine extends ex.Engine {
             $.post("/game/poll_turn", { "game_id": gameID }, (data: msgs.PollTurn) => {
                 this.label.text = `Current player: ${data.CurrentPlayer}`
                 if (this.localPlayers.has(data.CurrentPlayer)) {
-                    this.myTurn = true
-                    this.enableCursor()
-                    this.players.get(data.CurrentPlayer)?.activate()
-                    this.currentPlayer = data.CurrentPlayer
-                    this.label.color = ex.Color.Green
+                    this.takeTurn(data.CurrentPlayer)
                 } else {
                     var currentPlayer = this.players.get(data.CurrentPlayer)
                     if (currentPlayer != null) {
@@ -118,24 +134,18 @@ export class GameEngine extends ex.Engine {
                     this.label.color = ex.Color.White
                 }
             }, "json").fail(() => {
-                this.restoreToWelcomeScreen()
+                this.ss.restoreToWelcomeScreen()
             })
         } else {
             var newAlpha = this.players.get(this.currentPlayer)?.rotation
             $.post("/game/move", { "game_id": gameID, "user_id": userID, "username": this.currentPlayer, "new_alpha": newAlpha }, null, "json").fail(() => {
-                this.restoreToWelcomeScreen()
+                this.ss.restoreToWelcomeScreen()
             })
         }
-
-        if (this.input.keyboard.isHeld(ex.Input.Keys.Esc))
-            this.restoreToWelcomeScreen()
     }
 
-    restoreToWelcomeScreen() {
-        deleteCookie("game_id")
-        deleteCookie("user_id")
-        deleteCookie("username")
-        deleteCookie("is_host")
-        this.ss.setCurrentScreen("welcome_screen")
+    onPreUpdate() {
+        if (this.input.keyboard.isHeld(ex.Input.Keys.Esc))
+            this.ss.restoreToWelcomeScreen()
     }
 }

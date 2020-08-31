@@ -84,7 +84,7 @@ export class PreparationScreen extends Screen {
                 setCookie("game_started", "true")
                 self.ss.setCurrentScreen("game_screen")
             }, "json").fail(() => {
-                self.restoreToWelcomeScreen()
+                self.ss.restoreToWelcomeScreen()
             })
         }
 
@@ -93,7 +93,7 @@ export class PreparationScreen extends Screen {
         this.leaveGame.innerText = "Leave game"
 
         this.leaveGame.onclick = () => {
-            this.restoreToWelcomeScreen()
+            this.ss.restoreToWelcomeScreen()
         }
 
         this.ui.appendChild(this.container)
@@ -103,15 +103,6 @@ export class PreparationScreen extends Screen {
     getJoinLink(): string {
         var gameID = getCookie("game_id")
         return `${window.location.href}${gameID}`
-    }
-
-
-    restoreToWelcomeScreen() {
-        deleteCookie("game_id")
-        deleteCookie("user_id")
-        deleteCookie("username")
-        deleteCookie("is_host")
-        this.ss.setCurrentScreen("welcome_screen")
     }
 
     enable() {
@@ -197,7 +188,7 @@ export class PreparationScreen extends Screen {
             if (self.enabled)
                 self.refreshTimerID = window.setTimeout(self.refresh, userListRefreshTimeout, self)
         }, "json").fail(() => {
-            self.restoreToWelcomeScreen()
+            self.ss.restoreToWelcomeScreen()
         })
     }
 
@@ -212,7 +203,7 @@ export class PreparationScreen extends Screen {
             if (self.enabled)
                 self.gameStartedTimerID = window.setTimeout(self.pollGameStatus, gameStartedRefreshTimeout, self)
         }, "json").fail(() => {
-            self.restoreToWelcomeScreen()
+            self.ss.restoreToWelcomeScreen()
         })
     }
 
@@ -224,7 +215,7 @@ export class PreparationScreen extends Screen {
             self.updateUsersList(data)
         }, "json").fail(() => {
             if (backOnFail)
-                self.restoreToWelcomeScreen()
+                self.ss.restoreToWelcomeScreen()
         })
     }
 }

@@ -1,4 +1,5 @@
 import { Screen } from "./screen"
+import { deleteCookie } from "./utils"
 
 export class ScreenSelector {
     screens: Map<string, Screen>;
@@ -27,5 +28,14 @@ export class ScreenSelector {
         }
         s.enable()
         this.currentScreen = name
+    }
+
+    restoreToWelcomeScreen() {
+        deleteCookie("game_id")
+        deleteCookie("user_id")
+        deleteCookie("username")
+        deleteCookie("is_host")
+        deleteCookie("game_started")
+        this.setCurrentScreen("welcome_screen")
     }
 }
