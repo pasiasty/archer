@@ -3,8 +3,12 @@ import { PointerScope } from "excalibur/dist/Input/Index"
 import * as msgs from "./messages"
 import * as res from "./resources"
 import { Planet } from "./planet"
+import { Player } from "./player"
+import { Cursor } from "./cursor"
 
 export class GameEngine extends ex.Engine {
+    players: Map<string, Player>
+
     constructor() {
         super({
             canvasElementId: "game_screen",
@@ -15,6 +19,8 @@ export class GameEngine extends ex.Engine {
             backgroundColor: ex.Color.Black,
             suppressPlayButton: true,
         })
+
+        this.players = new Map<string, Player>()
     }
 
     run() {
@@ -27,19 +33,21 @@ export class GameEngine extends ex.Engine {
             $.post("/game/get_world", (data: msgs.PublicWorld) => {
                 for (let p of data.Planets) {
                     console.log("planet", p.Location.X, p.Location.Y, p.Radius)
-                    this.add(new Planet(p))
+                    var newPlanet = new Planet(p)
+                    new Player(newPlanet, 0.13)
+                    this.add(newPlanet)
                 }
-
-                var player = new ex.Actor(data.Planets[0].Location.X, data.Planets[0].Location.Y)
-                var playerSprite = res.Images.player.asSprite().clone()
-                playerSprite.scale = new ex.Vector(0.1, 0.1)
-                playerSprite.offset = new ex.Vector(0, 25 + data.Planets[0].Radius)
-                player.addDrawing(playerSprite)
-                player.rotation = 1.5
-                this.add(player)
             }, "json").fail(() => {
                 alert("failed to get world")
             })
+
+            var cursor = new Cursor(this)
+            this.add(cursor)
+            cursor.setZIndex(100)
         })
+    }
+
+    onPostDraw() {
+
     }
 }

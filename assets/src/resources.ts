@@ -6,7 +6,7 @@ const Images: { [key: string]: ex.Texture } = {
 };
 
 const PlanetImages: ex.Texture[] = [
-    new ex.Texture('/public/assets/images/planet.png'),
+    new ex.Texture('/public/assets/images/planet0.png'),
     new ex.Texture('/public/assets/images/planet1.png'),
     new ex.Texture('/public/assets/images/planet2.png'),
     new ex.Texture('/public/assets/images/planet3.png'),
