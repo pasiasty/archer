@@ -69,7 +69,7 @@ func GameMove(c buffalo.Context) error {
 	}
 
 	if !user.HasPlayer(username) {
-		return c.Error(http.StatusForbidden, fmt.Errorf("player: %s does not belong to user: %s", username, userID))
+		return c.Error(http.StatusBadRequest, fmt.Errorf("player: %s does not belong to user: %s", username, userID))
 	}
 
 	w, err := game.GetWorld(c)
