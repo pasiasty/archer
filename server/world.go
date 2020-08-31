@@ -15,7 +15,9 @@ type World struct {
 
 // PublicWorld is structure that will be returned to frontend.
 type PublicWorld struct {
-	Planets []*Planet
+	Planets       []*Planet
+	Players       []*PublicPlayer
+	CurrentPlayer *PublicPlayer
 }
 
 // CreateWorld creates new world.
@@ -27,7 +29,7 @@ func CreateWorld(players []string) *World {
 	fullnesRatio := FullnessRatio(len(players))
 
 	for done := 0; done < numOfPlanets; {
-		if p, err := res.addPlanet(fullnesRatio); err != nil {
+		if p, err := res.generatePlanet(done, fullnesRatio); err != nil {
 			done = 0
 			res.planets = nil
 			continue
@@ -45,8 +47,8 @@ func CreateWorld(players []string) *World {
 	return res
 }
 
-func (w *World) addPlanet(fullnesRatio float32) (*Planet, error) {
-	for counter := 0; counter < 32; counter++ {
+func (w *World) generatePlanet(newPlanetID int, fullnesRatio float32) (*Planet, error) {
+	for counter := 0; counter < 128; counter++ {
 		newRadius := minRadius + rand.Float32()*(maxRadius-minRadius)
 		newRadius *= fullnesRatio
 		newPoint := RandomPoint(newRadius + minPlanetDistance*fullnesRatio/2)
@@ -62,7 +64,7 @@ func (w *World) addPlanet(fullnesRatio float32) (*Planet, error) {
 		}
 
 		if !wrong {
-			return CreatePlanet(newPoint, newRadius), nil
+			return CreatePlanet(newPlanetID, newPoint, newRadius), nil
 		}
 	}
 	return nil, errors.New("tried too many times")
@@ -70,7 +72,15 @@ func (w *World) addPlanet(fullnesRatio float32) (*Planet, error) {
 
 // GetPublicWorld constructs PublicWorld from World.
 func (w *World) GetPublicWorld() *PublicWorld {
+	players := []*PublicPlayer{}
+
+	for _, p := range w.players {
+		players = append(players, p.GetPublicPlayer())
+	}
+
 	return &PublicWorld{
-		Planets: w.planets,
+		Planets:       w.planets,
+		Players:       players,
+		CurrentPlayer: players[w.currentPlayerIdx],
 	}
 }

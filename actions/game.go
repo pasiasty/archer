@@ -4,12 +4,21 @@ import (
 	"net/http"
 
 	"github.com/gobuffalo/buffalo"
-	"github.com/pasiasty/archer/server"
 )
 
 // GameGetWorld default implementation.
 func GameGetWorld(c buffalo.Context) error {
-	players := []string{"", "", "", ""}
-	w := server.CreateWorld(players)
-	return c.Render(http.StatusOK, r.JSON(w.GetPublicWorld()))
+	gameID := c.Param("game_id")
+
+	game, err := gm.GetGame(c, gameID)
+	if err != nil {
+		return err
+	}
+
+	world, err := game.GetWorld(c)
+	if err != nil {
+		return err
+	}
+
+	return c.Render(http.StatusOK, r.JSON(world))
 }

@@ -116,6 +116,14 @@ func (g *Game) Start(c buffalo.Context, userID string) error {
 	return nil
 }
 
+// GetWorld is used for getting the world state.
+func (g *Game) GetWorld(c buffalo.Context) (*PublicWorld, error) {
+	if !g.Started() {
+		return nil, c.Error(http.StatusForbidden, fmt.Errorf("cannot get world for not started game: %s", g.gameID))
+	}
+	return g.world.GetPublicWorld(), nil
+}
+
 // AddHostUser adds new user as host.
 func (g *Game) AddHostUser() *User {
 	return g.addUser(true)
