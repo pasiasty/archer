@@ -10,3 +10,9 @@ func (as *ActionSuite) Test_Game_GetWorld() {
 
 	as.Request("/game/get_world", map[string]interface{}{"game_id": as.u.GameID}, http.StatusOK)
 }
+
+func (as *ActionSuite) Test_Game_PollTurn() {
+}
+
+func (as *ActionSuite) Test_Game_Move() {
+}

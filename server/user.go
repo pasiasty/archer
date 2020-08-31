@@ -59,6 +59,17 @@ func (u *User) RemovePlayer(c buffalo.Context) (string, error) {
 	return lastPlayer, nil
 }
 
+// HasPlayer tells whether user contains specific player.
+func (u *User) HasPlayer(player string) bool {
+	for _, p := range u.Players {
+		if p == player {
+			return true
+		}
+	}
+
+	return false
+}
+
 // StoreToCookie stores all user relevant information into cookie.
 func (u *User) StoreToCookie(c buffalo.Context) {
 	SetCookie(c, "game_id", u.GameID)

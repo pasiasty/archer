@@ -2,8 +2,12 @@ package server
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"math/rand"
+	"net/http"
+
+	"github.com/gobuffalo/buffalo"
 )
 
 // World contains information of all players in the world.
@@ -83,4 +87,14 @@ func (w *World) GetPublicWorld() *PublicWorld {
 		Players:       players,
 		CurrentPlayer: players[w.currentPlayerIdx],
 	}
+}
+
+// MovePlayer sets new alpha for current player.
+func (w *World) MovePlayer(c buffalo.Context, player string, newAlpha float32) error {
+	currentPlayer := w.players[w.currentPlayerIdx]
+	if currentPlayer.name != player {
+		return c.Error(http.StatusForbidden, fmt.Errorf("player: %s is not an active one", player))
+	}
+	currentPlayer.alpha = newAlpha
+	return nil
 }
