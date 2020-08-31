@@ -24,47 +24,48 @@ func CreateWorld(players []string) *World {
 	numOfPlanets := len(players) + extraPlanets
 	res := &World{}
 
-	fullnesRatio := float32(math.Pow(maxPlayers/float64(len(players)), 0.5))
+	fullnesRatio := FullnessRatio(len(players))
 
 	for done := 0; done < numOfPlanets; {
-		if err := res.addPlanet(fullnesRatio); err != nil {
+		if p, err := res.addPlanet(fullnesRatio); err != nil {
 			done = 0
 			res.planets = nil
 			continue
+		} else {
+			res.planets = append(res.planets, p)
+			done++
 		}
-		done++
 	}
 
 	rand.Shuffle(len(players), func(i, j int) { players[i], players[j] = players[j], players[i] })
 	for idx, p := range players {
-		res.players = append(res.players, CreatePlayer(p, res.planets[idx], rand.Float32()*2*math.Pi))
+		res.players = append(res.players, CreatePlayer(p, idx, res.planets[idx], rand.Float32()*2*math.Pi))
 	}
 
 	return res
 }
 
-func (w *World) addPlanet(fullnesRatio float32) error {
+func (w *World) addPlanet(fullnesRatio float32) (*Planet, error) {
 	for counter := 0; counter < 32; counter++ {
 		newRadius := minRadius + rand.Float32()*(maxRadius-minRadius)
 		newRadius *= fullnesRatio
-		newPoint := RandomPoint(newRadius + minPlanetDistance)
+		newPoint := RandomPoint(newRadius + minPlanetDistance*fullnesRatio/2)
 
 		wrong := false
 
 		for _, p := range w.planets {
 			dist := newPoint.Distance(p.Location)
-			if dist < (newRadius + p.Radius + minPlanetDistance) {
+			if dist < (newRadius + p.Radius + minPlanetDistance*fullnesRatio) {
 				wrong = true
 				break
 			}
 		}
 
 		if !wrong {
-			w.planets = append(w.planets, CreatePlanet(newPoint, newRadius))
-			return nil
+			return CreatePlanet(newPoint, newRadius), nil
 		}
 	}
-	return errors.New("tried too many times")
+	return nil, errors.New("tried too many times")
 }
 
 // GetPublicWorld constructs PublicWorld from World.
