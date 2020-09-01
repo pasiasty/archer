@@ -5,6 +5,7 @@ import (
 )
 
 const maxPlayers = 12
+const maxSimulationSamples = 50
 
 const maxX = 1920.0
 const maxY = 1080.0

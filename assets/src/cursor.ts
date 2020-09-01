@@ -6,10 +6,12 @@ export class Cursor extends ex.Actor {
     shootEndPoint: ex.Vector
     engine: ex.Engine
     callback: (e: ex.Engine, v: ex.Vector) => void
+    enabled: boolean
 
     constructor(engine: ex.Engine, callback: (e: ex.Engine, v: ex.Vector) => void) {
         super()
 
+        this.enabled = false
         this.engine = engine
         this.callback = callback
 
@@ -17,16 +19,20 @@ export class Cursor extends ex.Actor {
         this.shootEndPoint = new ex.Vector(-1, -1)
 
         this.engine.input.pointers.primary.on('down', (evt: ex.Input.PointerDownEvent) => {
-            this.shootStartPoint = evt.pos
+            if (this.enabled)
+                this.shootStartPoint = evt.pos
         })
 
         this.engine.input.pointers.primary.on('up', (_: ex.Input.PointerUpEvent) => {
-            this.callback(this.engine, this.shootStartPoint.sub(this.shootEndPoint))
-            this.shootStartPoint = new ex.Vector(-1, -1)
+            if (this.enabled) {
+                this.callback(this.engine, this.shootStartPoint.sub(this.shootEndPoint))
+                this.shootStartPoint = new ex.Vector(-1, -1)
+            }
         })
 
         this.engine.input.pointers.primary.on("move", (evt: ex.Input.PointerMoveEvent) => {
-            this.shootEndPoint = evt.pos
+            if (this.enabled)
+                this.shootEndPoint = evt.pos
         })
     }
 

@@ -125,21 +125,29 @@ func (w *World) Shoot(c buffalo.Context, player string, shot Point) (*Trajectory
 	if currentPlayer.name != player {
 		return nil, c.Error(http.StatusForbidden, fmt.Errorf("player: %s is not an active one", player))
 	}
-	t := w.generateTrajectory(shot)
+
+	t := w.generateTrajectory(currentPlayer.Coordinates(), shot)
 	w.returnedTrajectories = 1
 	w.currentTrajectory = t
 
 	return t, nil
 }
 
-func (w *World) generateTrajectory(shot Point) *Trajectory {
+func vectorToAngle(p Point) float32 {
+	if p.Y >= 0 {
+		return float32(math.Atan(float64(p.Y / p.X)))
+	}
+	return 2*math.Pi - float32(math.Atan(float64(-p.Y/p.X)))
+}
+
+func (w *World) generateTrajectory(start, shot Point) *Trajectory {
 	t := &Trajectory{}
-	for i := 0; i < 100; i++ {
-		t.ArrowStates = append(t.ArrowStates, ArrowState{
-			Time:        0,
-			Orientation: 0,
-			Position:    Point{X: float32(10 * i), Y: float32(10 * i)},
-		})
+	arrowState := ArrowState{
+		Orientation: vectorToAngle(shot),
+		Position:    start,
+	}
+	for i := 0; i < maxSimulationSamples; i++ {
+		t.ArrowStates = append(t.ArrowStates, arrowState)
 	}
 	return t
 }

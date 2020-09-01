@@ -1,5 +1,7 @@
 package server
 
+import "math"
+
 // Player is a game player.
 type Player struct {
 	name     string
@@ -34,4 +36,13 @@ func (p *Player) GetPublicPlayer() *PublicPlayer {
 		Alpha:    p.alpha,
 		ColorIdx: p.colorIdx,
 	}
+}
+
+// Coordinates returns global coordinates of the player.
+func (p *Player) Coordinates() Point {
+	res := *p.planet.Location
+	res.X += float32(float64(p.planet.Radius) * math.Sin(float64(p.alpha)))
+	res.Y -= float32(float64(p.planet.Radius) * math.Cos(float64(p.alpha)))
+
+	return res
 }

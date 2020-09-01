@@ -112,7 +112,7 @@ export class GameEngine extends ex.Engine {
                 "username": currentPlayer?.username,
                 "new_alpha": currentPlayer?.rotation,
                 "shot_x": v.x,
-                "shot_y": v.y,
+                "shot_y": -v.y,
             }, (data: msgs.Trajectory) => {
                 g.endTurn(data)
             }, "json").fail(() => {
@@ -128,11 +128,13 @@ export class GameEngine extends ex.Engine {
 
     enableCursor() {
         this.add(this.cursor)
+        this.cursor.enabled = true
         this.cursor.setZIndex(100)
     }
 
     disableCursor() {
         this.remove(this.cursor)
+        this.cursor.enabled = false
     }
 
     takeTurn(currentPlayer: string) {

@@ -95,12 +95,10 @@ export class Trajectory {
 }
 
 export class ArrowState {
-    Time: number
     Position: Point
     Orientation: number
 
     constructor() {
-        this.Time = 0
         this.Position = new Point()
         this.Orientation = 0
     }
