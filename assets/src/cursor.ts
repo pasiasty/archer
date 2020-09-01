@@ -5,11 +5,13 @@ export class Cursor extends ex.Actor {
     shootStartPoint: ex.Vector
     shootEndPoint: ex.Vector
     engine: ex.Engine
+    callback: (e: ex.Engine, v: ex.Vector) => void
 
-    constructor(engine: ex.Engine) {
+    constructor(engine: ex.Engine, callback: (e: ex.Engine, v: ex.Vector) => void) {
         super()
 
         this.engine = engine
+        this.callback = callback
 
         this.shootStartPoint = new ex.Vector(-1, -1)
         this.shootEndPoint = new ex.Vector(-1, -1)
@@ -19,6 +21,7 @@ export class Cursor extends ex.Actor {
         })
 
         this.engine.input.pointers.primary.on('up', (_: ex.Input.PointerUpEvent) => {
+            this.callback(this.engine, this.shootStartPoint.sub(this.shootEndPoint))
             this.shootStartPoint = new ex.Vector(-1, -1)
         })
 

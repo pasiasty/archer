@@ -135,9 +135,13 @@ func (w *World) Shoot(c buffalo.Context, player string, shot Point) (*Trajectory
 func (w *World) generateTrajectory(shot Point) *Trajectory {
 	t := &Trajectory{}
 	for i := 0; i < 1000; i++ {
-		t.ArrowStates = append(t.ArrowStates)
+		t.ArrowStates = append(t.ArrowStates, ArrowState{
+			Time:        0,
+			Orientation: 0,
+			Position:    Point{X: 100, Y: 100},
+		})
 	}
-	return &Trajectory{}
+	return t
 }
 
 func (w *World) removeKilledPlayer(name string) {

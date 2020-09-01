@@ -92,7 +92,7 @@ export class Player extends ex.Actor {
             $.post("/game/move", { "game_id": gameID, "user_id": userID, "username": this.username, "new_alpha": this.rotation }, () => {
                 this.posChanged = false
             }, "json").fail(() => {
-                this.ss.restoreToWelcomeScreen()
+                this.ss.restoreToWelcomeScreen(true)
             })
         }
     }

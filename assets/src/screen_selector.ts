@@ -30,12 +30,16 @@ export class ScreenSelector {
         this.currentScreen = name
     }
 
-    restoreToWelcomeScreen() {
+    restoreToWelcomeScreen(withRefresh = false) {
         deleteCookie("game_id")
         deleteCookie("user_id")
         deleteCookie("username")
         deleteCookie("is_host")
         deleteCookie("game_started")
-        this.setCurrentScreen("welcome_screen")
+
+        if (withRefresh)
+            window.location.reload();
+        else
+            this.setCurrentScreen("welcome_screen")
     }
 }

@@ -83,3 +83,25 @@ export class PollTurn {
         this.ShotPerformed = false
     }
 }
+
+export class Trajectory {
+    ArrowStates: ArrowState[]
+    KilledPlayer: string
+
+    constructor() {
+        this.ArrowStates = []
+        this.KilledPlayer = ""
+    }
+}
+
+export class ArrowState {
+    Time: number
+    Position: Point
+    Orientation: number
+
+    constructor() {
+        this.Time = 0
+        this.Position = new Point()
+        this.Orientation = 0
+    }
+}

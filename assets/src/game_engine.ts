@@ -8,7 +8,7 @@ import { Cursor } from "./cursor"
 import { getCookie } from "./utils"
 import { ScreenSelector } from "./screen_selector"
 
-const watchMoveInterval = 200
+const watchMoveInterval = 100
 
 export class GameEngine extends ex.Engine {
     players: Map<string, Player>
@@ -37,7 +37,7 @@ export class GameEngine extends ex.Engine {
         this.localPlayers = new Set<string>()
         this.planets = new Map<number, Planet>()
         this.myTurn = false
-        this.cursor = new Cursor(this)
+        this.cursor = new Cursor(this, this.performShot)
         this.currentPlayer = ""
 
         this.label = new ex.Label('Current player:', 0, 40)
@@ -82,7 +82,7 @@ export class GameEngine extends ex.Engine {
                     this.players.set(p.Name, new Player(p.Name, planet, p.Alpha, p.ColorIdx, this.ss, this))
                 }
             }, "json").fail(() => {
-                this.ss.restoreToWelcomeScreen()
+                this.ss.restoreToWelcomeScreen(true)
             })
 
             $.post("/preparation/list_users", { "game_id": gameID }, (data: msgs.UsersList) => {
@@ -95,9 +95,32 @@ export class GameEngine extends ex.Engine {
                 }
                 this.add(this.timer)
             }, "json").fail(() => {
-                this.ss.restoreToWelcomeScreen()
+                this.ss.restoreToWelcomeScreen(true)
             })
         })
+    }
+
+    performShot(self: ex.Engine, v: ex.Vector) {
+        var g = self as GameEngine
+        if (v.size > 50) {
+            var gameID = getCookie("game_id")
+            var userID = getCookie("user_id")
+
+            var currentPlayer = g.players.get(g.currentPlayer)
+
+            $.post("/game/shoot", {
+                "game_id": gameID,
+                "user_id": userID,
+                "username": currentPlayer?.username,
+                "new_alpha": currentPlayer?.rotation,
+                "shot_x": v.x,
+                "shot_y": v.y,
+            }, (data: msgs.Trajectory) => {
+                console.log("received trajectory", data)
+            }, "json").fail(() => {
+                g.ss.restoreToWelcomeScreen(true)
+            })
+        }
     }
 
     enableCursor() {
@@ -131,13 +154,13 @@ export class GameEngine extends ex.Engine {
                     this.label.color = ex.Color.White
                 }
             }, "json").fail(() => {
-                this.ss.restoreToWelcomeScreen()
+                this.ss.restoreToWelcomeScreen(true)
             })
         }
     }
 
     onPreUpdate() {
         if (this.input.keyboard.isHeld(ex.Input.Keys.Esc))
-            this.ss.restoreToWelcomeScreen()
+            this.ss.restoreToWelcomeScreen(true)
     }
 }
