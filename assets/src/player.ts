@@ -3,9 +3,7 @@ import { Planet } from "./planet"
 import * as res from "./resources"
 import { getCookie } from "./utils"
 import { ScreenSelector } from "./screen_selector"
-
-const omega = 0.0025
-const movInterval = 100
+import { Consts } from "./constants"
 
 export class Player extends ex.Actor {
     colorID: number
@@ -33,7 +31,7 @@ export class Player extends ex.Actor {
         this.addDrawing(playerSprite)
         this.rotation = alpha
         this.timer = new ex.Timer({
-            interval: movInterval,
+            interval: Consts.movInterval,
             fcn: () => {
                 this.updatePosition()
             },
@@ -58,7 +56,7 @@ export class Player extends ex.Actor {
                 mult = -1
 
             var diff = Math.min(diffPos, diffNeg)
-            var change = delta * omega
+            var change = delta * Consts.omega
             if (change >= diff) {
                 change = diff
                 this.desiredAlpha = -1
@@ -70,11 +68,11 @@ export class Player extends ex.Actor {
         }
 
         if (engine.input.keyboard.isHeld(ex.Input.Keys.Right)) {
-            this.rotation += delta * omega
+            this.rotation += delta * Consts.omega
             this.posChanged = true
         }
         if (engine.input.keyboard.isHeld(ex.Input.Keys.Left)) {
-            this.rotation -= delta * omega
+            this.rotation -= delta * Consts.omega
             this.posChanged = true
         }
     }

@@ -134,11 +134,11 @@ func (w *World) Shoot(c buffalo.Context, player string, shot Point) (*Trajectory
 
 func (w *World) generateTrajectory(shot Point) *Trajectory {
 	t := &Trajectory{}
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < 100; i++ {
 		t.ArrowStates = append(t.ArrowStates, ArrowState{
 			Time:        0,
 			Orientation: 0,
-			Position:    Point{X: 100, Y: 100},
+			Position:    Point{X: float32(10 * i), Y: float32(10 * i)},
 		})
 	}
 	return t

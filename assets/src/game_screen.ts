@@ -2,7 +2,6 @@ import * as ex from "excalibur"
 import { Screen } from "./screen"
 import { ScreenSelector } from "./screen_selector"
 import * as msgs from "./messages"
-import { PointerScope } from "excalibur/dist/Input/Index"
 import { DrawUtil } from "excalibur/dist/Util/Index"
 import { GameEngine } from "./game_engine"
 

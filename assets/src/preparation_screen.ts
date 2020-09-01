@@ -2,9 +2,7 @@ import { Screen } from "./screen"
 import { getCookie, copyToClipboard, isHost, deleteCookie, setCookie } from "./utils"
 import { ScreenSelector } from "./screen_selector"
 import { UsersList } from "./messages"
-
-const userListRefreshTimeout = 100
-const gameStartedRefreshTimeout = 100
+import { Consts } from "./constants"
 
 export class PreparationScreen extends Screen {
     joinLink: HTMLLabelElement
@@ -130,10 +128,10 @@ export class PreparationScreen extends Screen {
         this.container.appendChild(this.leaveGame)
 
         this.refresh(this)
-        this.refreshTimerID = window.setTimeout(this.refresh, userListRefreshTimeout, this)
+        this.refreshTimerID = window.setTimeout(this.refresh, Consts.userListRefreshTimeout, this)
 
         if (!isHost())
-            this.gameStartedTimerID = window.setTimeout(this.pollGameStatus, gameStartedRefreshTimeout, this)
+            this.gameStartedTimerID = window.setTimeout(this.pollGameStatus, Consts.gameStartedRefreshTimeout, this)
     }
 
     disable() {
@@ -186,7 +184,7 @@ export class PreparationScreen extends Screen {
         $.post("preparation/list_users", { "game_id": gameID, "user_id": userID }, (data: UsersList) => {
             self.updateUsersList(data)
             if (self.enabled)
-                self.refreshTimerID = window.setTimeout(self.refresh, userListRefreshTimeout, self)
+                self.refreshTimerID = window.setTimeout(self.refresh, Consts.userListRefreshTimeout, self)
         }, "json").fail(() => {
             self.ss.restoreToWelcomeScreen()
         })
@@ -201,7 +199,7 @@ export class PreparationScreen extends Screen {
                 self.ss.setCurrentScreen("game_screen")
             }
             if (self.enabled)
-                self.gameStartedTimerID = window.setTimeout(self.pollGameStatus, gameStartedRefreshTimeout, self)
+                self.gameStartedTimerID = window.setTimeout(self.pollGameStatus, Consts.gameStartedRefreshTimeout, self)
         }, "json").fail(() => {
             self.ss.restoreToWelcomeScreen()
         })

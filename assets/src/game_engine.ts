@@ -7,8 +7,8 @@ import { Player } from "./player"
 import { Cursor } from "./cursor"
 import { getCookie } from "./utils"
 import { ScreenSelector } from "./screen_selector"
-
-const watchMoveInterval = 100
+import { Consts } from "./constants"
+import { Arrow } from "./arrow"
 
 export class GameEngine extends ex.Engine {
     players: Map<string, Player>
@@ -48,7 +48,7 @@ export class GameEngine extends ex.Engine {
         this.label.textAlign = ex.TextAlign.Left
 
         this.timer = new ex.Timer({
-            interval: watchMoveInterval,
+            interval: Consts.watchMoveInterval,
             fcn: () => {
                 this.pollTurn()
             },
@@ -116,11 +116,15 @@ export class GameEngine extends ex.Engine {
                 "shot_x": v.x,
                 "shot_y": v.y,
             }, (data: msgs.Trajectory) => {
-                console.log("received trajectory", data)
+                new Arrow(self, (self as GameEngine).afterPlayingTrajectory, data)
             }, "json").fail(() => {
                 g.ss.restoreToWelcomeScreen(true)
             })
         }
+    }
+
+    afterPlayingTrajectory(g: ex.Engine) {
+        console.log("done!")
     }
 
     enableCursor() {
