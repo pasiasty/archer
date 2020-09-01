@@ -82,6 +82,11 @@ export class Player extends ex.Actor {
         this.game.add(this.timer)
     }
 
+    public deactivate() {
+        this.activated = false
+        this.game.remove(this.timer)
+    }
+
     updatePosition() {
         if (this.posChanged) {
             var gameID = getCookie("game_id")

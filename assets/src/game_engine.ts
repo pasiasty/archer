@@ -14,7 +14,6 @@ export class GameEngine extends ex.Engine {
     players: Map<string, Player>
     localPlayers: Set<string>
     currentPlayer: string
-    myTurn: boolean
     planets: Map<number, Planet>
     cursor: Cursor
     label: ex.Label
@@ -36,7 +35,6 @@ export class GameEngine extends ex.Engine {
         this.players = new Map<string, Player>()
         this.localPlayers = new Set<string>()
         this.planets = new Map<number, Planet>()
-        this.myTurn = false
         this.cursor = new Cursor(this, this.performShot)
         this.currentPlayer = ""
 
@@ -116,15 +114,16 @@ export class GameEngine extends ex.Engine {
                 "shot_x": v.x,
                 "shot_y": v.y,
             }, (data: msgs.Trajectory) => {
-                new Arrow(self, (self as GameEngine).afterPlayingTrajectory, data)
+                g.endTurn(data)
             }, "json").fail(() => {
                 g.ss.restoreToWelcomeScreen(true)
             })
         }
     }
 
-    afterPlayingTrajectory(g: ex.Engine) {
-        console.log("done!")
+    afterPlayingTrajectory(self: ex.Engine) {
+        var g = self as GameEngine
+        g.add(g.timer)
     }
 
     enableCursor() {
@@ -137,30 +136,57 @@ export class GameEngine extends ex.Engine {
     }
 
     takeTurn(currentPlayer: string) {
-        this.myTurn = true
+        this.remove(this.timer)
         this.enableCursor()
         this.players.get(currentPlayer)?.activate()
         this.currentPlayer = currentPlayer
         this.label.color = ex.Color.Green
     }
 
+    endTurn(data: msgs.Trajectory) {
+        new Arrow(this, this.afterPlayingTrajectory, data)
+        this.disableCursor()
+        this.players.get(this.currentPlayer)?.deactivate()
+        this.currentPlayer = ""
+        this.label.color = ex.Color.White
+    }
+
     pollTurn() {
         var gameID = getCookie("game_id")
 
-        if (!this.myTurn) {
-            $.post("/game/poll_turn", { "game_id": gameID }, (data: msgs.PollTurn) => {
-                this.label.text = `Current player: ${data.CurrentPlayer}`
-                if (this.localPlayers.has(data.CurrentPlayer)) {
-                    this.takeTurn(data.CurrentPlayer)
-                } else {
-                    var currentPlayer = this.players.get(data.CurrentPlayer)
-                    currentPlayer?.setDestination(data.CurrentPlayerAlpha)
-                    this.label.color = ex.Color.White
+        $.post("/game/poll_turn", { "game_id": gameID }, (data: msgs.PollTurn) => {
+            this.label.text = `Current player: ${data.CurrentPlayer}`
+            if (this.localPlayers.has(data.CurrentPlayer)) {
+                this.takeTurn(data.CurrentPlayer)
+            } else {
+                var currentPlayer = this.players.get(data.CurrentPlayer)
+                currentPlayer?.setDestination(data.CurrentPlayerAlpha)
+                this.label.color = ex.Color.White
+
+                if (data.ShotPerformed) {
+                    this.remove(this.timer)
+                    this.getTrajectory(this)
                 }
-            }, "json").fail(() => {
-                this.ss.restoreToWelcomeScreen(true)
-            })
-        }
+            }
+        }, "json").fail(() => {
+            this.ss.restoreToWelcomeScreen(true)
+        })
+    }
+
+    getTrajectory(self: GameEngine) {
+        var gameID = getCookie("game_id")
+        var userID = getCookie("user_id")
+        var username = self.localPlayers.values().next().value
+
+        $.post("/game/get_trajectory", {
+            "game_id": gameID,
+            "user_id": userID,
+            "username": username,
+        }, (data: msgs.Trajectory) => {
+            self.endTurn(data)
+        }, "json").fail(() => {
+            self.ss.restoreToWelcomeScreen(true)
+        })
     }
 
     onPreUpdate() {
