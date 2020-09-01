@@ -111,7 +111,7 @@ func (g *Game) Start(c buffalo.Context, userID string) error {
 		players = append(players, p)
 	}
 
-	g.world = CreateWorld(players)
+	g.world = CreateWorld(len(g.users), players)
 	g.started = true
 	return nil
 }

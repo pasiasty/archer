@@ -6,15 +6,20 @@ import (
 	"math"
 	"math/rand"
 	"net/http"
+	"sync"
 
 	"github.com/gobuffalo/buffalo"
 )
 
 // World contains information of all players in the world.
 type World struct {
-	players          []*Player
-	planets          []*Planet
-	currentPlayerIdx int
+	players              []*Player
+	planets              []*Planet
+	currentPlayerIdx     int
+	returnedTrajectories int
+	mux                  sync.Mutex
+	currentTrajectory    *Trajectory
+	numUsers             int
 }
 
 // PublicWorld is structure that will be returned to frontend.
@@ -25,10 +30,12 @@ type PublicWorld struct {
 }
 
 // CreateWorld creates new world.
-func CreateWorld(players []string) *World {
+func CreateWorld(numUsers int, players []string) *World {
 	extraPlanets := 2 + rand.Intn(2)
 	numOfPlanets := len(players) + extraPlanets
-	res := &World{}
+	res := &World{
+		numUsers: numUsers,
+	}
 
 	fullnesRatio := FullnessRatio(len(players))
 
@@ -89,12 +96,55 @@ func (w *World) GetPublicWorld() *PublicWorld {
 	}
 }
 
+// GetPollTurn returns active player state.
+func (w *World) GetPollTurn() PollTurn {
+	return PollTurn{
+		CurrentPlayer:      w.players[w.currentPlayerIdx].name,
+		CurrentPlayerAlpha: w.players[w.currentPlayerIdx].alpha,
+		ShotPerformed:      !(w.returnedTrajectories == 0),
+	}
+}
+
 // MovePlayer sets new alpha for current player.
 func (w *World) MovePlayer(c buffalo.Context, player string, newAlpha float32) error {
+	w.mux.Lock()
+	defer w.mux.Unlock()
 	currentPlayer := w.players[w.currentPlayerIdx]
 	if currentPlayer.name != player {
 		return c.Error(http.StatusForbidden, fmt.Errorf("player: %s is not an active one", player))
 	}
 	currentPlayer.alpha = newAlpha
 	return nil
+}
+
+// Shoot performs shot for selected player.
+func (w *World) Shoot(c buffalo.Context, player string, shot Point) (*Trajectory, error) {
+	w.mux.Lock()
+	defer w.mux.Unlock()
+	currentPlayer := w.players[w.currentPlayerIdx]
+	if currentPlayer.name != player {
+		return nil, c.Error(http.StatusForbidden, fmt.Errorf("player: %s is not an active one", player))
+	}
+	t := w.generateTrajectory(shot)
+	w.returnedTrajectories = 1
+	w.currentTrajectory = t
+
+	return t, nil
+}
+
+func (w *World) generateTrajectory(shot Point) *Trajectory {
+	return &Trajectory{}
+}
+
+// GetTrajectory returns current trajectory.
+func (w *World) GetTrajectory() *Trajectory {
+	w.mux.Lock()
+	defer w.mux.Unlock()
+	w.returnedTrajectories++
+	t := w.currentTrajectory
+	if w.returnedTrajectories == w.numUsers {
+		w.returnedTrajectories = 0
+		w.currentTrajectory = nil
+	}
+	return t
 }

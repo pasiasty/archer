@@ -39,6 +39,25 @@ func (gm *GameManager) GetGame(c buffalo.Context, gameID string) (*Game, error) 
 	return game, nil
 }
 
+// GetWorld is used for getting world for selected game and player.
+func (gm *GameManager) GetWorld(c buffalo.Context, gameID, userID, username string) (*World, error) {
+	game, err := gm.GetGame(c, gameID)
+	if err != nil {
+		return nil, err
+	}
+
+	user, err := game.GetUser(c, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	if !user.HasPlayer(username) {
+		return nil, c.Error(http.StatusBadRequest, fmt.Errorf("player: %s does not belong to user: %s", username, userID))
+	}
+
+	return game.GetWorld(c)
+}
+
 // CreateGame creates new game and host user, returns host user.
 func (gm *GameManager) CreateGame() *User {
 	gm.mux.Lock()

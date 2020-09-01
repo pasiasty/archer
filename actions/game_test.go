@@ -35,3 +35,9 @@ func (as *ActionSuite) Test_Game_PollTurn() {
 
 func (as *ActionSuite) Test_Game_Move() {
 }
+
+func (as *ActionSuite) Test_Game_Shoot() {
+}
+
+func (as *ActionSuite) Test_Game_GetTrajectory() {
+}
