@@ -5,7 +5,7 @@ import { getCookie } from "./utils"
 import { ScreenSelector } from "./screen_selector"
 
 const omega = 0.0025
-const movInterval = 5
+const movInterval = 100
 
 export class Player extends ex.Actor {
     colorID: number
@@ -15,10 +15,12 @@ export class Player extends ex.Actor {
     ss: ScreenSelector
     username: string
     game: ex.Engine
+    desiredAlpha: number
 
     constructor(username: string, p: Planet, alpha: number, colorID: number, ss: ScreenSelector, game: ex.Engine) {
         super()
 
+        this.desiredAlpha = -1
         this.game = game
         this.username = username
         this.ss = ss
@@ -41,6 +43,28 @@ export class Player extends ex.Actor {
     }
 
     public update(engine: ex.Engine, delta: number) {
+        if (this.desiredAlpha != -1) {
+            // Find direction and diff of shorter arc
+            // connecting two angles.
+            var mult = 1
+            var diffPos = this.desiredAlpha - this.rotation
+            if (diffPos < 0)
+                diffPos += 2 * Math.PI
+            var diffNeg = this.rotation - this.desiredAlpha
+            if (diffNeg < 0)
+                diffNeg += 2 * Math.PI
+
+            if (diffNeg < diffPos)
+                mult = -1
+
+            var diff = Math.min(diffPos, diffNeg)
+            var change = delta * omega
+            if (change >= diff) {
+                change = diff
+                this.desiredAlpha = -1
+            }
+            this.rotation += mult * change
+        }
         if (!this.activated) {
             return
         }
@@ -71,5 +95,10 @@ export class Player extends ex.Actor {
                 this.ss.restoreToWelcomeScreen()
             })
         }
+    }
+
+    public setDestination(alpha: number) {
+        if (alpha != this.rotation)
+            this.desiredAlpha = alpha
     }
 }

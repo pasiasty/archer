@@ -8,7 +8,7 @@ import { Cursor } from "./cursor"
 import { getCookie } from "./utils"
 import { ScreenSelector } from "./screen_selector"
 
-const watchMoveInterval = 20
+const watchMoveInterval = 200
 
 export class GameEngine extends ex.Engine {
     players: Map<string, Player>
@@ -127,9 +127,7 @@ export class GameEngine extends ex.Engine {
                     this.takeTurn(data.CurrentPlayer)
                 } else {
                     var currentPlayer = this.players.get(data.CurrentPlayer)
-                    if (currentPlayer != null) {
-                        currentPlayer.rotation = data.CurrentPlayerAlpha
-                    }
+                    currentPlayer?.setDestination(data.CurrentPlayerAlpha)
                     this.label.color = ex.Color.White
                 }
             }, "json").fail(() => {
