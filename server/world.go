@@ -133,7 +133,25 @@ func (w *World) Shoot(c buffalo.Context, player string, shot Point) (*Trajectory
 }
 
 func (w *World) generateTrajectory(shot Point) *Trajectory {
+	t := &Trajectory{}
+	for i := 0; i < 1000; i++ {
+		t.ArrowStates = append(t.ArrowStates)
+	}
 	return &Trajectory{}
+}
+
+func (w *World) removeKilledPlayer(name string) {
+	idxToRemove := -1
+	for idx, player := range w.players {
+		if player.name == name {
+			idxToRemove = idx
+			break
+		}
+	}
+
+	copy(w.players[idxToRemove:], w.players[idxToRemove+1:]) // Shift a[i+1:] left one index.
+	w.players[len(w.players)-1] = nil                        // Erase last element (write zero value).
+	w.players = w.players[:len(w.players)-1]                 // Truncate slice.
 }
 
 // GetTrajectory returns current trajectory.
@@ -145,6 +163,8 @@ func (w *World) GetTrajectory() *Trajectory {
 	if w.returnedTrajectories == w.numUsers {
 		w.returnedTrajectories = 0
 		w.currentTrajectory = nil
+		w.removeKilledPlayer(t.KilledPlayer)
+		w.currentPlayerIdx = (w.currentPlayerIdx + 1) % len(w.players)
 	}
 	return t
 }
