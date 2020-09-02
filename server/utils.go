@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"math"
 	"math/rand"
 
 	"github.com/gobuffalo/buffalo"
@@ -25,4 +26,8 @@ func selectNewKey(m map[string]bool) string {
 			return res
 		}
 	}
+}
+
+func floatCompare(a, b, tol float32) bool {
+	return float32(math.Abs(float64(a-b))) < tol
 }

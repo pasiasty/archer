@@ -27,3 +27,23 @@ func (p *Point) Distance(other *Point) float32 {
 	diffY := p.Y - other.Y
 	return float32(math.Pow(float64(diffX*diffX+diffY*diffY), 0.5))
 }
+
+// Length returns length.
+func (p *Point) Length() float32 {
+	return p.Distance(&Point{X: 0, Y: 0})
+}
+
+// Normalize returns normalized point.
+func (p *Point) Normalize() *Point {
+	l := p.Length()
+	return &Point{X: p.X / l, Y: p.Y / l}
+}
+
+// CopyWithSameAlpha returns copy of the point with same alpha, but different length.
+func (p *Point) CopyWithSameAlpha(length float32) *Point {
+	n := p.Normalize()
+	return &Point{
+		X: n.X * length,
+		Y: n.Y * length,
+	}
+}

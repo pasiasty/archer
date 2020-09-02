@@ -5,13 +5,19 @@ import (
 )
 
 const maxPlayers = 12
-const maxSimulationSamples = 50
+const maxSimulationSamples = 100
+const simulationTimeStep = 20.0
+const gravityConst = 0.00001
+const velScaling = 1 / 600.0
 
 const maxX = 1920.0
 const maxY = 1080.0
 const minRadius = 40.0
 const maxRadius = 80.0
 const minPlanetDistance = 130.0
+
+const playerShootHeight = 30.0
+const arrowHalfLength = 50.0
 
 // FullnessRatio magnifies distances and sizes according to number of players (the lower the bigger).
 func FullnessRatio(players int) float32 {

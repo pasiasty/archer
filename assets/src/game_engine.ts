@@ -112,8 +112,9 @@ export class GameEngine extends ex.Engine {
                 "username": currentPlayer?.username,
                 "new_alpha": currentPlayer?.rotation,
                 "shot_x": v.x,
-                "shot_y": -v.y,
+                "shot_y": v.y,
             }, (data: msgs.Trajectory) => {
+                console.log(data)
                 g.endTurn(data)
             }, "json").fail(() => {
                 g.ss.restoreToWelcomeScreen(true)

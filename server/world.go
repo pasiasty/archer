@@ -133,21 +133,56 @@ func (w *World) Shoot(c buffalo.Context, player string, shot Point) (*Trajectory
 	return t, nil
 }
 
-func vectorToAngle(p Point) float32 {
-	if p.Y >= 0 {
-		return float32(math.Atan(float64(p.Y / p.X)))
+func flipRadianIfNegative(alpha float32) float32 {
+	if alpha < 0 {
+		return alpha + 2*math.Pi
 	}
-	return 2*math.Pi - float32(math.Atan(float64(-p.Y/p.X)))
+	return alpha
+}
+
+func vectorToAngle(p Point) float32 {
+	if p.X >= 0 {
+		return flipRadianIfNegative(float32(math.Atan(float64(p.Y / p.X))))
+	}
+	if p.Y >= 0 {
+		return flipRadianIfNegative(math.Pi - float32(math.Atan(float64(-p.Y/p.X))))
+	}
+	return flipRadianIfNegative(math.Pi - float32(math.Atan(float64(-p.Y/p.X))))
+}
+
+func (w *World) applyGravity(pos, vel *Point) {
+	for _, p := range w.planets {
+		dist := pos.Distance(p.Location)
+		acc := gravityConst * p.Mass / (dist * dist)
+		vel.X += acc * simulationTimeStep
+		vel.Y += acc * simulationTimeStep
+	}
 }
 
 func (w *World) generateTrajectory(start, shot Point) *Trajectory {
 	t := &Trajectory{}
-	arrowState := ArrowState{
-		Orientation: vectorToAngle(shot),
-		Position:    start,
-	}
+	pos := start
+	vel := shot
+
+	vel.X *= velScaling
+	vel.Y *= velScaling
+
+	arrowOffset := vel.CopyWithSameAlpha(arrowHalfLength)
+	pos.X += arrowOffset.X
+	pos.Y += arrowOffset.Y
+
+	alpha := vectorToAngle(shot)
+
 	for i := 0; i < maxSimulationSamples; i++ {
-		t.ArrowStates = append(t.ArrowStates, arrowState)
+		t.ArrowStates = append(t.ArrowStates, ArrowState{
+			Orientation: alpha,
+			Position:    pos,
+		})
+
+		pos.X += vel.X * simulationTimeStep
+		pos.Y += vel.Y * simulationTimeStep
+		w.applyGravity(&pos, &vel)
+		alpha = vectorToAngle(vel)
 	}
 	return t
 }
