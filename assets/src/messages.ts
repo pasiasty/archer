@@ -86,11 +86,11 @@ export class PollTurn {
 
 export class Trajectory {
     ArrowStates: ArrowState[]
-    KilledPlayer: string
+    CollidedWith: string
 
     constructor() {
         this.ArrowStates = []
-        this.KilledPlayer = ""
+        this.CollidedWith = ""
     }
 }
 

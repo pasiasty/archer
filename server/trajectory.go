@@ -3,7 +3,7 @@ package server
 // Trajectory stores information of generated arrow trajectory.
 type Trajectory struct {
 	ArrowStates  []ArrowState
-	KilledPlayer string
+	CollidedWith string
 }
 
 // ArrowState is the state of single simulation frame for the arrow.

@@ -37,7 +37,17 @@ export class Arrow extends ex.Actor {
     updatePosition() {
         if (this.sampleIdx == this.trajectory.ArrowStates.length) {
             this.timer.pause()
-            this.game.remove(this)
+
+            if (this.trajectory.CollidedWith == "planet") {
+                var removalTimer = new ex.Timer({
+                    interval: Consts.arrowRemovalDelay,
+                    fcn: () => { this.game.remove(this) },
+                })
+                this.game.add(removalTimer)
+            }
+            else {
+                this.game.remove(this)
+            }
             this.callback(this.game)
             return
         }

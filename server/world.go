@@ -161,6 +161,23 @@ func (w *World) applyGravity(pos, vel Vector) Vector {
 	return vel
 }
 
+func (w *World) outsideBoundingBox(pos Vector) bool {
+	if pos.X > 2*maxX || pos.X < -maxX || pos.Y > 4*maxY || pos.Y < -2*maxY {
+		return true
+	}
+	return false
+}
+
+func (w *World) collidedWithPlanet(pos Vector) (bool, Vector) {
+	for _, p := range w.planets {
+		if pos.Distance(p.Location) <= p.Radius {
+			pos = pos.Sub(p.Location).CopyWithSameAlpha(p.Radius).Add(p.Location)
+			return true, pos
+		}
+	}
+	return false, Vector{}
+}
+
 func (w *World) generateTrajectory(start, shot Vector) *Trajectory {
 	t := &Trajectory{}
 	pos := start
@@ -180,6 +197,19 @@ func (w *World) generateTrajectory(start, shot Vector) *Trajectory {
 		pos = pos.Add(vel.Mult(simulationTimeStep))
 		vel = w.applyGravity(pos, vel)
 		alpha = vectorToAngle(vel)
+
+		if w.outsideBoundingBox(pos) {
+			break
+		}
+
+		if collided, corrPos := w.collidedWithPlanet(pos); collided {
+			t.ArrowStates = append(t.ArrowStates, ArrowState{
+				Orientation: alpha,
+				Position:    corrPos,
+			})
+			t.CollidedWith = "planet"
+			break
+		}
 	}
 	return t
 }
@@ -211,7 +241,9 @@ func (w *World) GetTrajectory() *Trajectory {
 	if w.returnedTrajectories == w.numUsers {
 		w.returnedTrajectories = 0
 		w.currentTrajectory = nil
-		w.removeKilledPlayer(t.KilledPlayer)
+		if t.CollidedWith != "" && t.CollidedWith != "planet" {
+			w.removeKilledPlayer(t.CollidedWith)
+		}
 		w.currentPlayerIdx = (w.currentPlayerIdx + 1) % len(w.players)
 	}
 	return t
