@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -52,7 +51,6 @@ func (p *Player) Coordinates() Vector {
 
 // Collision tells whether given point collides with player or not.
 func (p *Player) Collision(v Vector) bool {
-	fmt.Printf("pos: %v v: %v\n", p.planet.Location, v)
 	extraOffsets := []float32{10, 20, 30, 40}
 	var collisionRadius float32 = 10.0
 
@@ -62,7 +60,6 @@ func (p *Player) Collision(v Vector) bool {
 		center.Y -= float32(float64(p.planet.Radius+eo) * math.Cos(float64(p.alpha)))
 
 		if center.Distance(v) <= collisionRadius {
-			fmt.Println("wooho!")
 			return true
 		}
 	}

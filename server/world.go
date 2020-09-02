@@ -245,8 +245,9 @@ func (w *World) GetTrajectory() *Trajectory {
 	w.mux.Lock()
 	defer w.mux.Unlock()
 	w.returnedTrajectories++
+	t := w.currentTrajectory
 	w.endTurnIfNeeded()
-	return w.currentTrajectory
+	return t
 }
 
 func (w *World) endTurnIfNeeded() {

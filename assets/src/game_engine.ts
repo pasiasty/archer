@@ -168,6 +168,7 @@ export class GameEngine extends ex.Engine {
                 this.takeTurn(data.CurrentPlayer)
             } else {
                 var currentPlayer = this.players.get(data.CurrentPlayer)
+                this.currentPlayer = data.CurrentPlayer
                 currentPlayer?.setDestination(data.CurrentPlayerAlpha)
                 this.label.color = ex.Color.White
 

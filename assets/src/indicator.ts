@@ -5,12 +5,12 @@ import { circle } from "excalibur/dist/Util/DrawUtil"
 export class Indicator extends ex.Actor {
     growing: boolean
     radius: number
-    color: ex.Color
+    indicatorColor: ex.Color
 
     constructor(color: ex.Color, y: number) {
         super(0, y)
 
-        this.color = color.average(ex.Color.White)
+        this.indicatorColor = color.average(ex.Color.White)
         this.growing = true
         this.radius = Consts.indicatorMinRadius
     }
@@ -32,6 +32,6 @@ export class Indicator extends ex.Actor {
     }
 
     public onPostDraw(ctx: CanvasRenderingContext2D, delta: number) {
-        circle(ctx, 0, 0, this.radius, this.color, this.color)
+        circle(ctx, 0, 0, this.radius, this.indicatorColor, this.indicatorColor)
     }
 }
