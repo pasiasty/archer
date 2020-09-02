@@ -150,26 +150,24 @@ func vectorToAngle(v Vector) float32 {
 	return flipRadianIfNegative(math.Pi - float32(math.Atan(float64(-v.Y/v.X))))
 }
 
-func (w *World) applyGravity(pos, vel *Vector) {
+func (w *World) applyGravity(pos, vel Vector) Vector {
 	for _, p := range w.planets {
 		dist := pos.Distance(p.Location)
-		acc := gravityConst * p.Mass / (dist * dist)
-		vel.X += acc * simulationTimeStep
-		vel.Y += acc * simulationTimeStep
+		accLen := gravityConst * p.Mass / (dist * dist)
+		accDir := p.Location.Sub(pos)
+		acc := accDir.CopyWithSameAlpha(accLen)
+		vel = vel.Add(acc.Mult(simulationTimeStep))
 	}
+	return vel
 }
 
 func (w *World) generateTrajectory(start, shot Vector) *Trajectory {
 	t := &Trajectory{}
 	pos := start
-	vel := shot
-
-	vel.X *= velScaling
-	vel.Y *= velScaling
+	vel := shot.Mult(velScaling)
 
 	arrowOffset := vel.CopyWithSameAlpha(arrowHalfLength)
-	pos.X += arrowOffset.X
-	pos.Y += arrowOffset.Y
+	pos = pos.Add(arrowOffset)
 
 	alpha := vectorToAngle(shot)
 
@@ -179,9 +177,8 @@ func (w *World) generateTrajectory(start, shot Vector) *Trajectory {
 			Position:    pos,
 		})
 
-		pos.X += vel.X * simulationTimeStep
-		pos.Y += vel.Y * simulationTimeStep
-		w.applyGravity(&pos, &vel)
+		pos = pos.Add(vel.Mult(simulationTimeStep))
+		vel = w.applyGravity(pos, vel)
 		alpha = vectorToAngle(vel)
 	}
 	return t

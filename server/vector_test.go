@@ -8,16 +8,16 @@ import (
 
 func Test_Vector_Distance(t *testing.T) {
 	for _, tc := range []struct {
-		p1   *Vector
-		p2   *Vector
+		p1   Vector
+		p2   Vector
 		dist float32
 	}{{
-		p1:   &Vector{X: 0, Y: 0},
-		p2:   &Vector{X: 2, Y: 0},
+		p1:   Vector{X: 0, Y: 0},
+		p2:   Vector{X: 2, Y: 0},
 		dist: 2,
 	}, {
-		p1:   &Vector{X: 0, Y: 0},
-		p2:   &Vector{X: 3, Y: 4},
+		p1:   Vector{X: 0, Y: 0},
+		p2:   Vector{X: 3, Y: 4},
 		dist: 5,
 	}} {
 		t.Run(fmt.Sprintf("%v_%v_%v", tc.p1, tc.p2, tc.dist), func(t *testing.T) {
@@ -30,16 +30,16 @@ func Test_Vector_Distance(t *testing.T) {
 
 func Test_Vector_CopyWithSameAlpha(t *testing.T) {
 	for _, tc := range []struct {
-		p1 *Vector
-		p2 *Vector
+		p1 Vector
+		p2 Vector
 		l  float32
 	}{{
-		p1: &Vector{X: 3, Y: 0},
-		p2: &Vector{X: 5, Y: 0},
+		p1: Vector{X: 3, Y: 0},
+		p2: Vector{X: 5, Y: 0},
 		l:  5,
 	}, {
-		p1: &Vector{X: -2, Y: -2},
-		p2: &Vector{X: -1, Y: -1},
+		p1: Vector{X: -2, Y: -2},
+		p2: Vector{X: -1, Y: -1},
 		l:  float32(math.Pow(2, 0.5)),
 	}} {
 		t.Run(fmt.Sprintf("%v_%v_%v", tc.p1, tc.p2, tc.l), func(t *testing.T) {

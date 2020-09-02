@@ -40,7 +40,7 @@ func (p *Player) GetPublicPlayer() *PublicPlayer {
 
 // Coordinates returns global coordinates of the player.
 func (p *Player) Coordinates() Vector {
-	res := *p.planet.Location
+	res := p.planet.Location
 	res.X += float32(float64(p.planet.Radius+playerShootHeight) * math.Sin(float64(p.alpha)))
 	res.Y -= float32(float64(p.planet.Radius+playerShootHeight) * math.Cos(float64(p.alpha)))
 
