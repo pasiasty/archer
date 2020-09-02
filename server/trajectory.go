@@ -8,6 +8,6 @@ type Trajectory struct {
 
 // ArrowState is the state of single simulation frame for the arrow.
 type ArrowState struct {
-	Position    Point
+	Position    Vector
 	Orientation float32
 }

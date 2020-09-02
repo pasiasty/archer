@@ -92,7 +92,7 @@ func GameShoot(c buffalo.Context) error {
 		c.Error(http.StatusBadRequest, fmt.Errorf("couldn't convert string to float: %v", err))
 	}
 
-	t, err := w.Shoot(c, username, server.Point{X: float32(shotXFloat), Y: float32(shotYFloat)})
+	t, err := w.Shoot(c, username, server.Vector{X: float32(shotXFloat), Y: float32(shotYFloat)})
 	if err != nil {
 		return err
 	}

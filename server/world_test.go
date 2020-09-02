@@ -23,31 +23,31 @@ func Test_World_CreateWorld(t *testing.T) {
 
 func Test_World_vectorToAngle(t *testing.T) {
 	for _, tc := range []struct {
-		p     Point
+		p     Vector
 		angle float32
 	}{{
-		p:     Point{X: 1, Y: 0},
+		p:     Vector{X: 1, Y: 0},
 		angle: 0,
 	}, {
-		p:     Point{X: 1, Y: 1},
+		p:     Vector{X: 1, Y: 1},
 		angle: math.Pi * 1 / 4,
 	}, {
-		p:     Point{X: 0, Y: 1},
+		p:     Vector{X: 0, Y: 1},
 		angle: math.Pi * 2 / 4,
 	}, {
-		p:     Point{X: -1, Y: 1},
+		p:     Vector{X: -1, Y: 1},
 		angle: math.Pi * 3 / 4,
 	}, {
-		p:     Point{X: -1, Y: 0},
+		p:     Vector{X: -1, Y: 0},
 		angle: math.Pi * 4 / 4,
 	}, {
-		p:     Point{X: -1, Y: -1},
+		p:     Vector{X: -1, Y: -1},
 		angle: math.Pi * 5 / 4,
 	}, {
-		p:     Point{X: 0, Y: -1},
+		p:     Vector{X: 0, Y: -1},
 		angle: math.Pi * 6 / 4,
 	}, {
-		p:     Point{X: 1, Y: -1},
+		p:     Vector{X: 1, Y: -1},
 		angle: math.Pi * 7 / 4,
 	}} {
 		t.Run(fmt.Sprintf("%v_%v", tc.p, tc.angle), func(t *testing.T) {

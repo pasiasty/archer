@@ -62,7 +62,7 @@ func (w *World) generatePlanet(newPlanetID int, fullnesRatio float32) (*Planet, 
 	for counter := 0; counter < 128; counter++ {
 		newRadius := minRadius + rand.Float32()*(maxRadius-minRadius)
 		newRadius *= fullnesRatio
-		newPoint := RandomPoint(newRadius + minPlanetDistance*fullnesRatio/2)
+		newPoint := RandomVector(newRadius + minPlanetDistance*fullnesRatio/2)
 
 		wrong := false
 
@@ -118,7 +118,7 @@ func (w *World) MovePlayer(c buffalo.Context, player string, newAlpha float32) e
 }
 
 // Shoot performs shot for selected player.
-func (w *World) Shoot(c buffalo.Context, player string, shot Point) (*Trajectory, error) {
+func (w *World) Shoot(c buffalo.Context, player string, shot Vector) (*Trajectory, error) {
 	w.mux.Lock()
 	defer w.mux.Unlock()
 	currentPlayer := w.players[w.currentPlayerIdx]
@@ -140,17 +140,17 @@ func flipRadianIfNegative(alpha float32) float32 {
 	return alpha
 }
 
-func vectorToAngle(p Point) float32 {
-	if p.X >= 0 {
-		return flipRadianIfNegative(float32(math.Atan(float64(p.Y / p.X))))
+func vectorToAngle(v Vector) float32 {
+	if v.X >= 0 {
+		return flipRadianIfNegative(float32(math.Atan(float64(v.Y / v.X))))
 	}
-	if p.Y >= 0 {
-		return flipRadianIfNegative(math.Pi - float32(math.Atan(float64(-p.Y/p.X))))
+	if v.Y >= 0 {
+		return flipRadianIfNegative(math.Pi - float32(math.Atan(float64(-v.Y/v.X))))
 	}
-	return flipRadianIfNegative(math.Pi - float32(math.Atan(float64(-p.Y/p.X))))
+	return flipRadianIfNegative(math.Pi - float32(math.Atan(float64(-v.Y/v.X))))
 }
 
-func (w *World) applyGravity(pos, vel *Point) {
+func (w *World) applyGravity(pos, vel *Vector) {
 	for _, p := range w.planets {
 		dist := pos.Distance(p.Location)
 		acc := gravityConst * p.Mass / (dist * dist)
@@ -159,7 +159,7 @@ func (w *World) applyGravity(pos, vel *Point) {
 	}
 }
 
-func (w *World) generateTrajectory(start, shot Point) *Trajectory {
+func (w *World) generateTrajectory(start, shot Vector) *Trajectory {
 	t := &Trajectory{}
 	pos := start
 	vel := shot
