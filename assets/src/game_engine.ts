@@ -31,6 +31,8 @@ export class GameEngine extends ex.Engine {
             suppressPlayButton: true,
         })
 
+        this.isDebug = Boolean(Consts.enableDebug)
+
         this.ss = ss
         this.players = new Map<string, Player>()
         this.localPlayers = new Set<string>()
@@ -121,8 +123,9 @@ export class GameEngine extends ex.Engine {
         }
     }
 
-    afterPlayingTrajectory(self: ex.Engine) {
+    afterPlayingTrajectory(self: ex.Engine, collidedWith: string) {
         var g = self as GameEngine
+        g.players.get(collidedWith)?.killPlayer()
         g.add(g.timer)
     }
 

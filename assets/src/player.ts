@@ -4,6 +4,7 @@ import * as res from "./resources"
 import { getCookie } from "./utils"
 import { ScreenSelector } from "./screen_selector"
 import { Consts } from "./constants"
+import { circle, point } from "excalibur/dist/Util/DrawUtil"
 
 export class Player extends ex.Actor {
     colorID: number
@@ -14,6 +15,7 @@ export class Player extends ex.Actor {
     username: string
     game: ex.Engine
     desiredAlpha: number
+    planet: Planet
 
     constructor(username: string, p: Planet, alpha: number, colorID: number, ss: ScreenSelector, game: ex.Engine) {
         super()
@@ -37,7 +39,8 @@ export class Player extends ex.Actor {
             },
             repeats: true,
         })
-        p.add(this)
+        this.planet = p
+        this.planet.add(this)
     }
 
     public update(engine: ex.Engine, delta: number) {
@@ -103,5 +106,19 @@ export class Player extends ex.Actor {
     public setDestination(alpha: number) {
         if (alpha != this.rotation)
             this.desiredAlpha = alpha
+    }
+
+    public onPostDraw(ctx: CanvasRenderingContext2D, delta: number) {
+        if (Consts.enableDebug) {
+            var extraOffsets: number[] = [10, 20, 30, 40]
+            for (let eo of extraOffsets) {
+                circle(ctx, 0, -this.planet.radius - eo, 10, ex.Color.White)
+            }
+        }
+    }
+
+    killPlayer() {
+        console.log(`${this.username} is killed`)
+        this.planet.remove(this)
     }
 }

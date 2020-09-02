@@ -6,4 +6,5 @@ export const Consts: { [key: string]: number } = {
     movInterval: 100,
     trajectoryInterval: 10,
     arrowRemovalDelay: 1500,
+    enableDebug: 0,
 };

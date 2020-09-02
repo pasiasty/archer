@@ -126,9 +126,10 @@ func (w *World) Shoot(c buffalo.Context, player string, shot Vector) (*Trajector
 		return nil, c.Error(http.StatusForbidden, fmt.Errorf("player: %s is not an active one", player))
 	}
 
-	t := w.generateTrajectory(currentPlayer.Coordinates(), shot)
+	t := w.generateTrajectory(currentPlayer.name, currentPlayer.Coordinates(), shot)
 	w.returnedTrajectories = 1
 	w.currentTrajectory = t
+	w.endTurnIfNeeded()
 
 	return t, nil
 }
@@ -178,7 +179,7 @@ func (w *World) collidedWithPlanet(pos Vector) (bool, Vector) {
 	return false, Vector{}
 }
 
-func (w *World) generateTrajectory(start, shot Vector) *Trajectory {
+func (w *World) generateTrajectory(shooter string, start, shot Vector) *Trajectory {
 	t := &Trajectory{}
 	pos := start
 	vel := shot.Mult(velScaling)
@@ -194,12 +195,19 @@ func (w *World) generateTrajectory(start, shot Vector) *Trajectory {
 			Position:    pos,
 		})
 
+		for _, p := range w.players {
+			if p.name != shooter && p.Collision(pos) {
+				t.CollidedWith = p.name
+				return t
+			}
+		}
+
 		pos = pos.Add(vel.Mult(simulationTimeStep))
 		vel = w.applyGravity(pos, vel)
 		alpha = vectorToAngle(vel)
 
 		if w.outsideBoundingBox(pos) {
-			break
+			return t
 		}
 
 		if collided, corrPos := w.collidedWithPlanet(pos); collided {
@@ -208,7 +216,7 @@ func (w *World) generateTrajectory(start, shot Vector) *Trajectory {
 				Position:    corrPos,
 			})
 			t.CollidedWith = "planet"
-			break
+			return t
 		}
 	}
 	return t
@@ -237,6 +245,11 @@ func (w *World) GetTrajectory() *Trajectory {
 	w.mux.Lock()
 	defer w.mux.Unlock()
 	w.returnedTrajectories++
+	w.endTurnIfNeeded()
+	return w.currentTrajectory
+}
+
+func (w *World) endTurnIfNeeded() {
 	t := w.currentTrajectory
 	if w.returnedTrajectories == w.numUsers {
 		w.returnedTrajectories = 0
@@ -246,5 +259,4 @@ func (w *World) GetTrajectory() *Trajectory {
 		}
 		w.currentPlayerIdx = (w.currentPlayerIdx + 1) % len(w.players)
 	}
-	return t
 }

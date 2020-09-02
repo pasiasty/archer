@@ -8,9 +8,9 @@ export class Arrow extends ex.Actor {
     timer: ex.Timer
     sampleIdx: number
     game: ex.Engine
-    callback: (game: ex.Engine) => void
+    callback: (game: ex.Engine, collidedWith: string) => void
 
-    constructor(game: ex.Engine, callback: (game: ex.Engine) => void, trajectory: Trajectory) {
+    constructor(game: ex.Engine, callback: (game: ex.Engine, collidedWith: string) => void, trajectory: Trajectory) {
         super()
         this.trajectory = trajectory
         this.sampleIdx = 0
@@ -48,7 +48,7 @@ export class Arrow extends ex.Actor {
             else {
                 this.game.remove(this)
             }
-            this.callback(this.game)
+            this.callback(this.game, this.trajectory.CollidedWith)
             return
         }
         var arrowState = this.trajectory.ArrowStates[this.sampleIdx]
