@@ -7,8 +7,8 @@ import (
 const maxPlayers = 12
 const maxSimulationSamples = 500
 const simulationTimeStep = 10.0
-const gravityConst = 0.00005
-const velScaling = 1 / 500.0
+const gravityConst = 0.00008
+const velScaling = 1 / 300.0
 
 const maxX = 1920.0
 const maxY = 1080.0
