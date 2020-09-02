@@ -235,6 +235,10 @@ func (w *World) removeKilledPlayer(name string) {
 		return
 	}
 
+	if idxToRemove <= w.currentPlayerIdx {
+		w.currentPlayerIdx--
+	}
+
 	copy(w.players[idxToRemove:], w.players[idxToRemove+1:]) // Shift a[i+1:] left one index.
 	w.players[len(w.players)-1] = nil                        // Erase last element (write zero value).
 	w.players = w.players[:len(w.players)-1]                 // Truncate slice.

@@ -17,7 +17,7 @@ export class Player extends ex.Actor {
     game: ex.Engine
     desiredAlpha: number
     planet: Planet
-    ind: Indicator | undefined
+    ind: Indicator
 
     constructor(username: string, p: Planet, alpha: number, colorID: number, ss: ScreenSelector, game: ex.Engine) {
         super()
@@ -44,6 +44,7 @@ export class Player extends ex.Actor {
         })
         this.planet = p
         this.planet.add(this)
+        this.ind = new Indicator(this.playerColor, - this.planet.radius - Consts.indicatorOffset)
     }
 
     public onPostUpdate(engine: ex.Engine, delta: number) {
@@ -85,20 +86,19 @@ export class Player extends ex.Actor {
 
     public activate() {
         this.activated = true
-        this.ind = new Indicator(this.playerColor, - this.planet.radius - Consts.indicatorOffset)
         this.add(this.ind)
         this.game.add(this.timer)
     }
 
     public deactivate() {
+        this.remove(this.ind)
         this.activated = false
         this.game.remove(this.timer)
     }
 
     updatePosition() {
         if (this.posChanged) {
-            if (this.ind != null)
-                this.remove(this.ind)
+            this.remove(this.ind)
 
             var gameID = getCookie("game_id")
             var userID = getCookie("user_id")
