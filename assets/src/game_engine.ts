@@ -149,11 +149,14 @@ export class GameEngine extends ex.Engine {
     }
 
     endTurn(data: msgs.Trajectory) {
-        new Arrow(this, this.afterPlayingTrajectory, data)
-        this.disableCursor()
-        this.players.get(this.currentPlayer)?.deactivate()
-        this.currentPlayer = ""
-        this.label.color = ex.Color.White
+        var currentPlayer = this.players.get(this.currentPlayer)
+        if (currentPlayer != null) {
+            new Arrow(this, this.afterPlayingTrajectory, data, currentPlayer.playerColor)
+            this.disableCursor()
+            this.players.get(this.currentPlayer)?.deactivate()
+            this.currentPlayer = ""
+            this.label.color = ex.Color.White
+        }
     }
 
     pollTurn() {

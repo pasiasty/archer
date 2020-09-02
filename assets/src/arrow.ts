@@ -10,7 +10,7 @@ export class Arrow extends ex.Actor {
     game: ex.Engine
     callback: (game: ex.Engine, collidedWith: string) => void
 
-    constructor(game: ex.Engine, callback: (game: ex.Engine, collidedWith: string) => void, trajectory: Trajectory) {
+    constructor(game: ex.Engine, callback: (game: ex.Engine, collidedWith: string) => void, trajectory: Trajectory, color: ex.Color) {
         super()
         this.trajectory = trajectory
         this.sampleIdx = 0
@@ -25,6 +25,7 @@ export class Arrow extends ex.Actor {
         arrowSprite.scale = new ex.Vector(0.02, 0.02)
         arrowSprite.offset = new ex.Vector(40, 22)
         arrowSprite.rotation = Math.PI
+        arrowSprite.colorize(color)
         this.addDrawing(arrowSprite)
 
         this.game = game

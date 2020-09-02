@@ -17,6 +17,25 @@ const PlanetImages: ex.Texture[] = [
     new ex.Texture('/public/assets/images/planet7.png'),
 ];
 
+export const Colors: ex.Color[] = [
+    ex.Color.White,
+    ex.Color.Blue,
+    ex.Color.Green,
+    ex.Color.LightGray,
+    ex.Color.Violet,
+    ex.Color.Red,
+    ex.Color.Yellow,
+    ex.Color.Viridian,
+    ex.Color.Orange,
+    ex.Color.Magenta,
+    ex.Color.Gray,
+    ex.Color.Cyan,
+    ex.Color.Azure,
+    ex.Color.Chartreuse,
+    ex.Color.Vermillion,
+    ex.Color.White,
+]
+
 const loader = new ex.Loader();
 
 for (const img in Images) {

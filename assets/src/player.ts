@@ -4,10 +4,11 @@ import * as res from "./resources"
 import { getCookie } from "./utils"
 import { ScreenSelector } from "./screen_selector"
 import { Consts } from "./constants"
-import { circle, point } from "excalibur/dist/Util/DrawUtil"
+import { Indicator } from "./indicator"
+import { circle } from "excalibur/dist/Util/DrawUtil"
 
 export class Player extends ex.Actor {
-    colorID: number
+    playerColor: ex.Color
     activated: boolean
     posChanged: boolean
     timer: ex.Timer
@@ -16,6 +17,7 @@ export class Player extends ex.Actor {
     game: ex.Engine
     desiredAlpha: number
     planet: Planet
+    ind: Indicator | undefined
 
     constructor(username: string, p: Planet, alpha: number, colorID: number, ss: ScreenSelector, game: ex.Engine) {
         super()
@@ -26,10 +28,11 @@ export class Player extends ex.Actor {
         this.ss = ss
         this.posChanged = false
         this.activated = false
-        this.colorID = colorID
+        this.playerColor = res.Colors[colorID]
         var playerSprite = res.Images.player.asSprite().clone()
         playerSprite.scale = new ex.Vector(0.1, 0.1)
         playerSprite.offset = new ex.Vector(0, 25 + p.radius)
+        playerSprite.colorize(this.playerColor)
         this.addDrawing(playerSprite)
         this.rotation = alpha
         this.timer = new ex.Timer({
@@ -43,7 +46,7 @@ export class Player extends ex.Actor {
         this.planet.add(this)
     }
 
-    public update(engine: ex.Engine, delta: number) {
+    public onPostUpdate(engine: ex.Engine, delta: number) {
         if (this.desiredAlpha != -1) {
             // Find direction and diff of shorter arc
             // connecting two angles.
@@ -82,6 +85,8 @@ export class Player extends ex.Actor {
 
     public activate() {
         this.activated = true
+        this.ind = new Indicator(this.playerColor, - this.planet.radius - Consts.indicatorOffset)
+        this.add(this.ind)
         this.game.add(this.timer)
     }
 
@@ -92,6 +97,9 @@ export class Player extends ex.Actor {
 
     updatePosition() {
         if (this.posChanged) {
+            if (this.ind != null)
+                this.remove(this.ind)
+
             var gameID = getCookie("game_id")
             var userID = getCookie("user_id")
 
