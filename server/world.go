@@ -196,13 +196,6 @@ func (w *World) generateTrajectory(shooter string, start, shot Vector) *Trajecto
 			Position:    pos,
 		})
 
-		for _, p := range w.players {
-			if p.name != shooter && p.Collision(pos, lastPos) {
-				t.CollidedWith = p.name
-				return t
-			}
-		}
-
 		lastPos = pos
 		pos = pos.Add(vel.Mult(simulationTimeStep))
 		vel = w.applyGravity(pos, vel)
@@ -211,6 +204,13 @@ func (w *World) generateTrajectory(shooter string, start, shot Vector) *Trajecto
 
 		if w.outsideBoundingBox(pos) {
 			return t
+		}
+
+		for _, p := range w.players {
+			if p.name != shooter && p.Collision(pos, lastPos) {
+				t.CollidedWith = p.name
+				return t
+			}
 		}
 
 		if collided, corrPos := w.collidedWithPlanet(pos); collided {
