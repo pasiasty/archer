@@ -21,7 +21,7 @@ export const Colors: ex.Color[] = [
     ex.Color.White,
     ex.Color.Blue,
     ex.Color.Green,
-    ex.Color.LightGray,
+    ex.Color.Black,
     ex.Color.Violet,
     ex.Color.Red,
     ex.Color.Yellow,
