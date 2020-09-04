@@ -5,7 +5,7 @@ import * as res from "./resources"
 import { Planet } from "./planet"
 import { Player } from "./player"
 import { Cursor } from "./cursor"
-import { getCookie } from "./utils"
+import { getCookie, optimalViewport } from "./utils"
 import { ScreenSelector } from "./screen_selector"
 import { Consts } from "./constants"
 import { Arrow } from "./arrow"
@@ -25,8 +25,8 @@ export class GameEngine extends ex.Engine {
             canvasElementId: "game_screen",
             pointerScope: PointerScope.Canvas,
             displayMode: ex.DisplayMode.Fixed,
-            width: 1920,
-            height: 1080,
+            viewport: optimalViewport(),
+            resolution: { width: 1920, height: 1080 },
             backgroundColor: ex.Color.Black,
             suppressPlayButton: true,
         })

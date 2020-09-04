@@ -31,13 +31,15 @@ export class Cursor extends ex.Actor {
         })
 
         this.engine.input.pointers.primary.on("move", (evt: ex.Input.PointerMoveEvent) => {
-            if (this.enabled)
+            if (this.enabled) {
                 this.shootEndPoint = evt.pos
+            }
         })
     }
 
-    public onPostDraw(ctx: CanvasRenderingContext2D, delta: number) {
-        if (this.shootStartPoint.x != -1)
+    public onPreDraw(ctx: CanvasRenderingContext2D, delta: number) {
+        if (this.shootStartPoint.x != -1) {
             line(ctx, ex.Color.Green, this.shootStartPoint.x, this.shootStartPoint.y, this.shootEndPoint.x, this.shootEndPoint.y, 3)
+        }
     }
 }

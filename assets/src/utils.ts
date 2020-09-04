@@ -50,3 +50,18 @@ export function copyToClipboard(val: string) {
 export function isHost(): boolean {
     return getCookie("is_host") == "true"
 }
+
+export function optimalViewport(): ex.ScreenDimension {
+    var height = $(window).height()
+    var width = $(window).width()
+
+    if (height == null || width == null) {
+        throw new Error("failed to get browser width or height")
+    }
+
+    if (width * 9 == height * 16)
+        return { width: width, height: height }
+    if (width * 9 > height * 16)
+        return { width: height * 16 / 9, height: height }
+    return { width: width, height: width * 9 / 16 }
+}
