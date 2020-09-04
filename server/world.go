@@ -163,7 +163,7 @@ func (w *World) applyGravity(pos, vel Vector) Vector {
 }
 
 func (w *World) outsideBoundingBox(pos Vector) bool {
-	if pos.X > 2*maxX || pos.X < -maxX || pos.Y > 4*maxY || pos.Y < -2*maxY {
+	if pos.X > (maxX+worldXMargin) || pos.X < -worldXMargin || pos.Y > (maxY+worldYMargin) || pos.Y < -worldYMargin {
 		return true
 	}
 	return false
@@ -186,6 +186,7 @@ func (w *World) generateTrajectory(shooter string, start, shot Vector) *Trajecto
 
 	arrowOffset := vel.CopyWithSameAlpha(arrowHalfLength)
 	pos = pos.Add(arrowOffset)
+	lastPos := pos
 
 	alpha := vectorToAngle(shot)
 
@@ -196,14 +197,16 @@ func (w *World) generateTrajectory(shooter string, start, shot Vector) *Trajecto
 		})
 
 		for _, p := range w.players {
-			if p.name != shooter && p.Collision(pos) {
+			if p.name != shooter && p.Collision(pos, lastPos) {
 				t.CollidedWith = p.name
 				return t
 			}
 		}
 
+		lastPos = pos
 		pos = pos.Add(vel.Mult(simulationTimeStep))
 		vel = w.applyGravity(pos, vel)
+		vel = vel.Cap(maxArrowSpeed)
 		alpha = vectorToAngle(vel)
 
 		if w.outsideBoundingBox(pos) {

@@ -118,7 +118,7 @@ export class Player extends ex.Actor {
 
     public onPostDraw(ctx: CanvasRenderingContext2D, delta: number) {
         if (Consts.enableDebug) {
-            var extraOffsets: number[] = [10, 20, 30, 40]
+            var extraOffsets: number[] = [3, 15, 30, 40]
             for (let eo of extraOffsets) {
                 circle(ctx, 0, -this.planet.radius - eo, 10, ex.Color.White)
             }

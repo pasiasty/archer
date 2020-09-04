@@ -50,8 +50,20 @@ func (p *Player) Coordinates() Vector {
 }
 
 // Collision tells whether given point collides with player or not.
-func (p *Player) Collision(v Vector) bool {
-	extraOffsets := []float32{10, 20, 30, 40}
+func (p *Player) Collision(pos, lastpos Vector) bool {
+	diff := lastpos.Sub(pos)
+	step := diff.Mult(1 / playerCollisionPoints)
+	for i := 0; i < (playerCollisionPoints + 1); i++ {
+		if p.singlePointCollision(pos) {
+			return true
+		}
+		pos = pos.Add(step)
+	}
+	return false
+}
+
+func (p *Player) singlePointCollision(v Vector) bool {
+	extraOffsets := []float32{3, 15, 30, 40}
 	var collisionRadius float32 = 10.0
 
 	for _, eo := range extraOffsets {

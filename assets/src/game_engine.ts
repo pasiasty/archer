@@ -107,6 +107,9 @@ export class GameEngine extends ex.Engine {
             var userID = getCookie("user_id")
 
             var currentPlayer = g.players.get(g.currentPlayer)
+            currentPlayer?.deactivate()
+            g.disableCursor()
+            g.label.color = ex.Color.White
 
             $.post("/game/shoot", {
                 "game_id": gameID,
@@ -152,10 +155,7 @@ export class GameEngine extends ex.Engine {
         var currentPlayer = this.players.get(this.currentPlayer)
         if (currentPlayer != null) {
             new Arrow(this, this.afterPlayingTrajectory, data, currentPlayer.playerColor)
-            this.disableCursor()
-            this.players.get(this.currentPlayer)?.deactivate()
             this.currentPlayer = ""
-            this.label.color = ex.Color.White
         }
     }
 

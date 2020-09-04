@@ -6,12 +6,16 @@ import (
 
 const maxPlayers = 12
 const maxSimulationSamples = 1000
-const simulationTimeStep = 5.0
-const gravityConst = 0.00016
+const simulationTimeStep = 10.0
+const gravityConst = 0.00010
 const velScaling = 1 / 300.0
+const playerCollisionPoints = 10
+const maxArrowSpeed = 2.5
 
 const maxX = 1920.0
 const maxY = 1080.0
+const worldXMargin = 1000.0
+const worldYMargin = 1000.0
 const minRadius = 40.0
 const maxRadius = 80.0
 const minPlanetDistance = 130.0

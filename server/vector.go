@@ -68,3 +68,11 @@ func (v Vector) Mult(a float32) Vector {
 	res.Y *= a
 	return res
 }
+
+// Cap returns vector capped to selected length.
+func (v Vector) Cap(d float32) Vector {
+	if v.Length() >= d {
+		return v.CopyWithSameAlpha(d)
+	}
+	return v
+}
