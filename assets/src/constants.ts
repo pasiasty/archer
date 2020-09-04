@@ -4,7 +4,7 @@ export const Consts: { [key: string]: number } = {
     gameStartedRefreshTimeout: 100,
     omega: 0.0020,
     movInterval: 100,
-    trajectoryInterval: 5,
+    trajectoryInterval: 25,
     arrowRemovalDelay: 1500,
     enableDebug: 0,
     indicatorMinRadius: 4,

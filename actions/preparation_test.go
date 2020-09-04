@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	base64Regexp = `[0-9a-zA-Z-_]{3,}=`
+	hexRegexp = `[0-9a-f]+`
 )
 
 func (as *ActionSuite) Test_Preparation_CreateGame() {
@@ -22,8 +22,8 @@ func (as *ActionSuite) Test_Preparation_CreateGame() {
 	usernameRes := setCookies[2]
 	isHostRes := setCookies[3]
 
-	as.Regexp(fmt.Sprintf(`game_id=%s;`, base64Regexp), gameIDRes)
-	as.Regexp(fmt.Sprintf(`user_id=%s;`, base64Regexp), userIDRes)
+	as.Regexp(fmt.Sprintf(`game_id=%s;`, hexRegexp), gameIDRes)
+	as.Regexp(fmt.Sprintf(`user_id=%s;`, hexRegexp), userIDRes)
 	as.Regexp(`username="[a-zA-Z ]+";`, usernameRes)
 	as.Regexp(`is_host=true;`, isHostRes)
 }
@@ -41,7 +41,7 @@ func (as *ActionSuite) Test_Preparation_JoinGame() {
 	isHostRes := setCookies[3]
 
 	as.Regexp(fmt.Sprintf(`game_id=%s;`, as.u.GameID), gameIDRes)
-	as.Regexp(fmt.Sprintf(`user_id=%s;`, base64Regexp), userIDRes)
+	as.Regexp(fmt.Sprintf(`user_id=%s;`, hexRegexp), userIDRes)
 	as.Regexp(`username="[a-zA-Z ]+";`, usernameRes)
 	as.Regexp(`is_host=false;`, isHostRes)
 }

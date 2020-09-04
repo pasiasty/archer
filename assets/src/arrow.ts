@@ -2,24 +2,22 @@ import * as ex from "excalibur"
 import { Trajectory } from "./messages";
 import { Consts } from "./constants"
 import * as res from "./resources"
+import { GameEngine } from "./game_engine";
 
 export class Arrow extends ex.Actor {
     trajectory: Trajectory
-    timer: ex.Timer
     sampleIdx: number
     game: ex.Engine
     callback: (game: ex.Engine, collidedWith: string) => void
+    accDelta: number
+    keepFlying: boolean
 
     constructor(game: ex.Engine, callback: (game: ex.Engine, collidedWith: string) => void, trajectory: Trajectory, color: ex.Color) {
         super()
         this.trajectory = trajectory
         this.sampleIdx = 0
-
-        this.timer = new ex.Timer({
-            interval: Consts.trajectoryInterval,
-            repeats: true,
-            fcn: () => { this.updatePosition() },
-        })
+        this.accDelta = 0
+        this.keepFlying = true
 
         var arrowSprite = res.Images.arrow.asSprite().clone()
         arrowSprite.scale = new ex.Vector(0.02, 0.02)
@@ -32,22 +30,29 @@ export class Arrow extends ex.Actor {
         this.callback = callback
 
         this.game.add(this)
-        this.game.add(this.timer)
     }
 
-    updatePosition() {
+    public onPostUpdate(engine: ex.Engine, delta: number) {
+        if (!this.keepFlying)
+            return
         if (this.sampleIdx == this.trajectory.ArrowStates.length) {
-            this.timer.pause()
-
+            this.keepFlying = false
             if (this.trajectory.CollidedWith != "planet") {
                 this.game.remove(this)
             }
             this.callback(this.game, this.trajectory.CollidedWith)
             return
         }
-        var arrowState = this.trajectory.ArrowStates[this.sampleIdx]
-        this.pos = new ex.Vector(arrowState.Position.X, arrowState.Position.Y)
-        this.rotation = arrowState.Orientation
-        this.sampleIdx++
+
+        this.accDelta += delta
+
+        if (this.accDelta > Consts.trajectoryInterval) {
+            this.accDelta -= Consts.trajectoryInterval
+
+            var arrowState = this.trajectory.ArrowStates[this.sampleIdx]
+            this.pos = new ex.Vector(arrowState.Position.X, arrowState.Position.Y)
+            this.rotation = arrowState.Orientation
+            this.sampleIdx++
+        }
     }
 }

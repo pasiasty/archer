@@ -5,12 +5,12 @@ import (
 )
 
 const maxPlayers = 12
-const maxSimulationSamples = 1000
-const simulationTimeStep = 10.0
-const gravityConst = 0.00010
-const velScaling = 1 / 300.0
+const maxSimulationSamples = 400
+const simulationTimeStep = 25.0
+const gravityConst = 0.000025
+const velScaling = 1 / 400.0
 const playerCollisionPoints = 10
-const maxArrowSpeed = 2.5
+const maxArrowSpeed = 0.8
 
 const maxX = 1920.0
 const maxY = 1080.0
