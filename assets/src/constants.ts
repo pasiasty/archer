@@ -6,7 +6,7 @@ export const Consts: { [key: string]: number } = {
     movInterval: 100,
     trajectoryInterval: 5,
     arrowRemovalDelay: 1500,
-    enableDebug: 1,
+    enableDebug: 0,
     indicatorMinRadius: 4,
     indicatorMaxRadius: 7,
     indicatorChangeVel: 0.007,
