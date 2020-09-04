@@ -1,6 +1,6 @@
 module github.com/pasiasty/archer
 
-go 1.13
+go 1.15
 
 require (
 	github.com/gobuffalo/buffalo v0.16.14

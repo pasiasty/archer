@@ -1,21 +1,11 @@
-# Welcome to Buffalo!
+# Gravity archer
 
-Thank you for choosing Buffalo for your web development needs.
+In this game you will try to kill the other archers in the space while taking into the consideration the force of gravity of surrounding planets!
 
-## Starting the Application
+## Developer guide
 
-Buffalo ships with a command that will watch your application and automatically rebuild the Go binary and any assets for you. To do that run the "buffalo dev" command:
-
-	$ buffalo dev
-
-If you point your browser to [http://127.0.0.1:3000](http://127.0.0.1:3000) you should see a "Welcome to Buffalo!" page.
-
-**Congratulations!** You now have your Buffalo application up and running.
-
-## What Next?
-
-We recommend you heading over to [http://gobuffalo.io](http://gobuffalo.io) and reviewing all of the great documentation there.
-
-Good luck!
-
-[Powered by Buffalo](http://gobuffalo.io)
+1. Install buffalo
+1. Install nodejs
+1. Run `buffalo setup` to prepare your environment
+1. Run `buffalo test` to ensure that all tests are passing
+1. Run `buffalo dev` to run a daemon that will watch your source code, rebuild and launch it automatically. The dev instance will be served under [http://127.0.0.1:3000](http://127.0.0.1:3000) address.
