@@ -1,5 +1,5 @@
 import * as ex from "excalibur"
-import { PointerScope } from "excalibur/dist/Input/Index"
+import { PointerScope, KeyEvent, Keys } from "excalibur/dist/Input/Index"
 import * as msgs from "./messages"
 import * as res from "./resources"
 import { Planet } from "./planet"
@@ -19,6 +19,7 @@ export class GameEngine extends ex.Engine {
     label: ex.Label
     ss: ScreenSelector
     timer: ex.Timer
+    autoResizeOn: boolean
 
     constructor(ss: ScreenSelector) {
         super({
@@ -29,6 +30,19 @@ export class GameEngine extends ex.Engine {
             resolution: { width: 1920, height: 1080 },
             backgroundColor: ex.Color.Black,
             suppressPlayButton: true,
+        })
+        this.autoResizeOn = true
+        window.addEventListener("resize", () => {
+            if (this.autoResizeOn) {
+                this.screen.viewport = optimalViewport()
+                this.screen.applyResolutionAndViewport()
+            }
+        });
+
+        this.input.keyboard.on('press', (evt: KeyEvent) => {
+            if (evt.key == Keys.F) {
+                this.screen.goFullScreen()
+            }
         })
 
         this.isDebug = Boolean(Consts.enableDebug)
