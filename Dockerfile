@@ -29,9 +29,9 @@ RUN apk add --no-cache ca-certificates
 WORKDIR /bin/
 
 COPY --from=builder /bin/app .
-COPY --from=builder public .
+COPY --from=builder /src/github.com/pasiasty/archer/public public
 
-ENV GO_ENV=production
+# ENV GO_ENV=production
 
 # Bind the app to 0.0.0.0 so it can be seen from outside the container
 ENV ADDR=0.0.0.0
