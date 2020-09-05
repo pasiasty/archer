@@ -29,7 +29,7 @@ RUN apk add --no-cache ca-certificates
 WORKDIR /bin/
 
 COPY --from=builder /bin/app .
-COPY --from=builder public public
+COPY --from=builder public .
 
 ENV GO_ENV=production
 
@@ -38,4 +38,4 @@ ENV ADDR=0.0.0.0
 
 EXPOSE 3000
 
-CMD /bin/app migrate; /bin/app
+CMD /bin/app
