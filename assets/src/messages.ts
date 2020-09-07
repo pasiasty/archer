@@ -118,8 +118,10 @@ export class GameStatus {
 
 export class WorldSettings {
     ShootTimeout: number
+    LoopedWorld: boolean
 
     constructor() {
         this.ShootTimeout = 0
+        this.LoopedWorld = false
     }
 }

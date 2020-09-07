@@ -25,4 +25,5 @@ type GameStatus struct {
 // WorldSettings define settings of the world.
 type WorldSettings struct {
 	ShootTimeout int32
+	LoopedWorld  bool
 }

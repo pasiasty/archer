@@ -21,6 +21,8 @@ export class PreparationScreen extends Screen {
     moveTimeoutInput: HTMLInputElement
     enabled: boolean
     lastShootTimeout: number
+    loopedWorldLabel: HTMLLabelElement
+    loopedWorldCheckbox: HTMLInputElement
 
     constructor(ss: ScreenSelector) {
         super("preparation_screen", ss)
@@ -68,6 +70,7 @@ export class PreparationScreen extends Screen {
 
         this.lastShootTimeout = 0
         this.moveTimeoutInput = document.createElement('input')
+        this.moveTimeoutInput.className = 'preparation'
         this.moveTimeoutInput.type = 'number'
         this.moveTimeoutInput.min = '0'
         this.moveTimeoutInput.step = '1'
@@ -78,14 +81,19 @@ export class PreparationScreen extends Screen {
                 v = 0
             if (v != this.lastShootTimeout) {
                 this.lastShootTimeout = v
-                var gameID = getCookie("game_id")
-                var userID = getCookie("user_id")
-                var self = this
-                $.post("preparation/game_settings", { "game_id": gameID, "user_id": userID, "shoot_timeout": v }).fail(() => {
-                    alert('failed to set game settings!')
-                    self.moveTimeoutInput.value = ''
-                })
+                this.postGameSettings(v, this.loopedWorldCheckbox.checked)
             }
+        })
+
+        this.loopedWorldLabel = document.createElement('label')
+        this.loopedWorldLabel.className = 'preparation label'
+        this.loopedWorldLabel.innerText = 'Looped world'
+
+        this.loopedWorldCheckbox = document.createElement('input')
+        this.loopedWorldCheckbox.type = 'checkbox'
+        this.loopedWorldCheckbox.className = 'preparation'
+        this.loopedWorldCheckbox.addEventListener('click', () => {
+            this.postGameSettings(this.lastShootTimeout, this.loopedWorldCheckbox.checked)
         })
 
         this.userReady = document.createElement('button')
@@ -127,6 +135,16 @@ export class PreparationScreen extends Screen {
         this.disable()
     }
 
+    postGameSettings(shootTimeout: number, loopedWorld: boolean) {
+        var gameID = getCookie("game_id")
+        var userID = getCookie("user_id")
+        var self = this
+        $.post("preparation/game_settings", { "game_id": gameID, "user_id": userID, "shoot_timeout": shootTimeout, "looped_world": loopedWorld }).fail(() => {
+            alert('failed to set game settings!')
+            self.moveTimeoutInput.value = ''
+        })
+    }
+
     getJoinLink(): string {
         var gameID = getCookie("game_id")
         return `${window.location.href}${gameID}`
@@ -149,9 +167,12 @@ export class PreparationScreen extends Screen {
 
         this.container.appendChild(this.moveTimeoutLabel)
         this.container.appendChild(this.moveTimeoutInput)
+        this.container.appendChild(this.loopedWorldLabel)
+        this.container.appendChild(this.loopedWorldCheckbox)
 
         if (!isHost()) {
             this.moveTimeoutInput.disabled = true
+            this.loopedWorldCheckbox.disabled = true
         }
 
         if (isHost()) {
@@ -232,6 +253,7 @@ export class PreparationScreen extends Screen {
         $.post("/preparation/game_status", { "game_id": gameID }, (data: GameStatus) => {
             var ws = data.WorldSettings
             self.moveTimeoutInput.value = ws.ShootTimeout.toString()
+            self.loopedWorldCheckbox.checked = ws.LoopedWorld
             if (data.Started == true) {
                 setCookie("game_started", "true")
                 self.ss.setCurrentScreen("game_screen")

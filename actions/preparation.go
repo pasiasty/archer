@@ -104,10 +104,16 @@ func PreparationGameSettings(c buffalo.Context) error {
 	gameID := c.Param("game_id")
 	userID := c.Param("user_id")
 	shootTimeoutStr := c.Param("shoot_timeout")
+	loopedWorldStr := c.Param("looped_world")
 
 	shootTimeout, err := strconv.ParseInt(shootTimeoutStr, 10, 32)
 	if err != nil {
 		return c.Error(http.StatusBadRequest, fmt.Errorf("wrong timeout value: %v", err))
+	}
+
+	loopedWorld, err := strconv.ParseBool(loopedWorldStr)
+	if err != nil {
+		return c.Error(http.StatusBadRequest, fmt.Errorf("wrong looped world value: %v", err))
 	}
 
 	game, err := gm.GetGame(c, gameID)
@@ -115,7 +121,9 @@ func PreparationGameSettings(c buffalo.Context) error {
 		return err
 	}
 
-	gs := server.CreateGameSettings(server.WithShootTimeout(int32(shootTimeout)))
+	gs := server.CreateGameSettings(
+		server.WithShootTimeout(int32(shootTimeout)),
+		server.WithLoopedWorld(loopedWorld))
 	if err := game.ApplyGameSettings(c, userID, gs); err != nil {
 		return err
 	}

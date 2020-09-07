@@ -96,6 +96,7 @@ func (g *Game) Status() GameStatus {
 		Started: g.started,
 		WorldSettings: WorldSettings{
 			ShootTimeout: g.gs.shootTimeout,
+			LoopedWorld:  g.gs.loopedWorld,
 		},
 	}
 }

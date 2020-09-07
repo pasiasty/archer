@@ -3,6 +3,7 @@ package server
 // GameSettings defines settings of the game.
 type GameSettings struct {
 	shootTimeout int32
+	loopedWorld  bool
 }
 
 // GameSettingsOption defines single option of game settings.
@@ -12,6 +13,13 @@ type GameSettingsOption func(*GameSettings)
 func WithShootTimeout(timeout int32) GameSettingsOption {
 	return func(gs *GameSettings) {
 		gs.shootTimeout = timeout
+	}
+}
+
+// WithLoopedWorld defines if world is looped.
+func WithLoopedWorld(loopedWorld bool) GameSettingsOption {
+	return func(gs *GameSettings) {
+		gs.loopedWorld = loopedWorld
 	}
 }
 
