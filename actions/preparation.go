@@ -1,7 +1,9 @@
 package actions
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gobuffalo/buffalo"
 	"github.com/pasiasty/archer/server"
@@ -86,7 +88,7 @@ func PreparationStartGame(c buffalo.Context) error {
 	return c.Render(http.StatusOK, r.JSON(server.Empty{}))
 }
 
-// PreparationGameHasStarted default implementation.
+// PreparationGameHasStarted tells whether game has already started.
 func PreparationGameHasStarted(c buffalo.Context) error {
 	gameID := c.Param("game_id")
 
@@ -95,4 +97,27 @@ func PreparationGameHasStarted(c buffalo.Context) error {
 		return err
 	}
 	return c.Render(http.StatusOK, r.JSON(started))
+}
+
+// PreparationGameSettings defines settings of the game.
+func PreparationGameSettings(c buffalo.Context) error {
+	gameID := c.Param("game_id")
+	userID := c.Param("user_id")
+	shootTimeoutStr := c.Param("shoot_timeout")
+
+	shootTimeout, err := strconv.ParseInt(shootTimeoutStr, 10, 32)
+	if err != nil {
+		return c.Error(http.StatusBadRequest, fmt.Errorf("wrong timeout value: %v", err))
+	}
+
+	game, err := gm.GetGame(c, gameID)
+	if err != nil {
+		return err
+	}
+
+	gs := server.CreateGameSettings(server.WithShootTimeout(int32(shootTimeout)))
+	if err := game.ApplyGameSettings(c, userID, gs); err != nil {
+		return err
+	}
+	return c.Render(http.StatusOK, r.JSON(server.Empty{}))
 }

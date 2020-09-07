@@ -54,6 +54,7 @@ type Game struct {
 	users          map[string]*User
 	usernamesToIDs map[string]string
 	world          *World
+	gs             GameSettings
 	maxPlayers     int
 }
 
@@ -111,7 +112,7 @@ func (g *Game) Start(c buffalo.Context, userID string) error {
 		players = append(players, p)
 	}
 
-	g.world = CreateWorld(len(g.users), players)
+	g.world = CreateWorld(len(g.users), players, g.gs)
 	g.started = true
 	return nil
 }
@@ -247,5 +248,16 @@ func (g *Game) MarkUserReady(c buffalo.Context, userID string) error {
 		return err
 	}
 	user.MarkReady()
+	return nil
+}
+
+// ApplyGameSettings alters game settings.
+func (g *Game) ApplyGameSettings(c buffalo.Context, userID string, gs GameSettings) error {
+	if g.host.UserID != userID {
+		return c.Error(http.StatusForbidden, fmt.Errorf("user: %s is not a host and can't modify game settings: %s", userID, g.gameID))
+	}
+	g.mux.Lock()
+	defer g.mux.Unlock()
+	g.gs = gs
 	return nil
 }

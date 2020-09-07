@@ -17,7 +17,10 @@ export class PreparationScreen extends Screen {
     addPlayer: HTMLButtonElement
     removePlayer: HTMLButtonElement
     leaveGame: HTMLButtonElement
+    moveTimeoutLabel: HTMLLabelElement
+    moveTimeoutInput: HTMLInputElement
     enabled: boolean
+    lastShootTimeout: number
 
     constructor(ss: ScreenSelector) {
         super("preparation_screen", ss)
@@ -58,6 +61,32 @@ export class PreparationScreen extends Screen {
         this.removePlayer.onclick = () => {
             this.postOrGoBack(this, "preparation/remove_player", false)
         }
+
+        this.moveTimeoutLabel = document.createElement('label')
+        this.moveTimeoutLabel.className = 'preparation label'
+        this.moveTimeoutLabel.innerText = 'Move timeout'
+
+        this.lastShootTimeout = 0
+        this.moveTimeoutInput = document.createElement('input')
+        this.moveTimeoutInput.type = 'number'
+        this.moveTimeoutInput.min = '0'
+        this.moveTimeoutInput.step = '1'
+        this.moveTimeoutInput.innerText = '0'
+        this.moveTimeoutInput.addEventListener('keyup', (ev: Event) => {
+            var v = parseInt(this.moveTimeoutInput.value)
+            if (v == null || this.moveTimeoutInput.value == '')
+                v = 0
+            if (v != this.lastShootTimeout) {
+                this.lastShootTimeout = v
+                var gameID = getCookie("game_id")
+                var userID = getCookie("user_id")
+                var self = this
+                $.post("preparation/game_settings", { "game_id": gameID, "user_id": userID, "shoot_timeout": v }).fail(() => {
+                    alert('failed to set game settings!')
+                    self.moveTimeoutInput.value = ''
+                })
+            }
+        })
 
         this.userReady = document.createElement('button')
         this.userReady.className = 'preparation button'
@@ -117,6 +146,13 @@ export class PreparationScreen extends Screen {
         this.container.appendChild(this.userList)
         this.container.appendChild(this.addPlayer)
         this.container.appendChild(this.removePlayer)
+
+        this.container.appendChild(this.moveTimeoutLabel)
+        this.container.appendChild(this.moveTimeoutInput)
+
+        if (!isHost()) {
+            this.moveTimeoutInput.disabled = true
+        }
 
         if (isHost()) {
             this.container.appendChild(this.startGame)

@@ -19,6 +19,7 @@ type World struct {
 	returnedTrajectories int
 	mux                  sync.Mutex
 	currentTrajectory    *Trajectory
+	gs                   GameSettings
 	numUsers             int
 }
 
@@ -30,11 +31,12 @@ type PublicWorld struct {
 }
 
 // CreateWorld creates new world.
-func CreateWorld(numUsers int, players []string) *World {
+func CreateWorld(numUsers int, players []string, gs GameSettings) *World {
 	extraPlanets := 2 + rand.Intn(2)
 	numOfPlanets := len(players) + extraPlanets
 	res := &World{
 		numUsers: numUsers,
+		gs:       gs,
 	}
 
 	fullnesRatio := FullnessRatio(len(players))

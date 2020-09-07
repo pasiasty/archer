@@ -127,3 +127,8 @@ func (as *ActionSuite) Test_Preparation_GameHasStarted() {
 	as.Equal(nil, err)
 	as.Equal(true, started)
 }
+
+func (as *ActionSuite) Test_Preparation_GameSettings() {
+	as.Fail("Not Implemented!")
+}
+
