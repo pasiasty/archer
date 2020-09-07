@@ -103,32 +103,30 @@ func (as *ActionSuite) Test_Preparation_RemovePlayer() {
 }
 
 func (as *ActionSuite) Test_Preparation_StartGame() {
-	as.Equal(false, as.g.Started())
+	as.Equal(false, as.g.Status().Started)
 
 	as.Request("/preparation/start_game", map[string]interface{}{"game_id": "abc"}, http.StatusNotFound)
 	as.Request("/preparation/start_game", map[string]interface{}{"game_id": as.u.GameID, "user_id": "abc"}, http.StatusForbidden)
 	as.Request("/preparation/start_game", map[string]interface{}{"game_id": as.u.GameID, "user_id": as.u.UserID}, http.StatusOK)
 
-	as.Equal(true, as.g.Started())
+	as.Equal(true, as.g.Status().Started)
 }
 
-func (as *ActionSuite) Test_Preparation_GameHasStarted() {
-	as.Request("/preparation/game_has_started", map[string]interface{}{"game_id": "abc"}, http.StatusNotFound)
-	res := as.Request("/preparation/game_has_started", map[string]interface{}{"game_id": as.u.GameID}, http.StatusOK)
-	var started bool
+func (as *ActionSuite) Test_Preparation_GameStatus() {
+	as.Request("/preparation/game_status", map[string]interface{}{"game_id": "abc"}, http.StatusNotFound)
+	res := as.Request("/preparation/game_status", map[string]interface{}{"game_id": as.u.GameID}, http.StatusOK)
+	var started server.GameStatus
 	err := json.Unmarshal(res.ResponseRecorder.Body.Bytes(), &started)
 	as.Equal(nil, err)
-	as.Equal(false, started)
+	as.Equal(server.GameStatus{Started: false}, started)
 
 	as.g.Start(as.c, as.u.UserID)
 
-	res = as.Request("/preparation/game_has_started", map[string]interface{}{"game_id": as.u.GameID}, http.StatusOK)
+	res = as.Request("/preparation/game_status", map[string]interface{}{"game_id": as.u.GameID}, http.StatusOK)
 	err = json.Unmarshal(res.ResponseRecorder.Body.Bytes(), &started)
 	as.Equal(nil, err)
-	as.Equal(true, started)
+	as.Equal(server.GameStatus{Started: true}, started)
 }
 
 func (as *ActionSuite) Test_Preparation_GameSettings() {
-	as.Fail("Not Implemented!")
 }
-

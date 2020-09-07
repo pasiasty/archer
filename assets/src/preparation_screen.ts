@@ -1,7 +1,7 @@
 import { Screen } from "./screen"
 import { getCookie, copyToClipboard, isHost, deleteCookie, setCookie } from "./utils"
 import { ScreenSelector } from "./screen_selector"
-import { UsersList } from "./messages"
+import { UsersList, GameStatus } from "./messages"
 import { Consts } from "./constants"
 
 export class PreparationScreen extends Screen {
@@ -229,8 +229,10 @@ export class PreparationScreen extends Screen {
     pollGameStatus(self: PreparationScreen) {
         var gameID = getCookie("game_id")
 
-        $.post("/preparation/game_has_started", { "game_id": gameID }, (data) => {
-            if (data == true) {
+        $.post("/preparation/game_status", { "game_id": gameID }, (data: GameStatus) => {
+            var ws = data.WorldSettings
+            self.moveTimeoutInput.value = ws.ShootTimeout.toString()
+            if (data.Started == true) {
                 setCookie("game_started", "true")
                 self.ss.setCurrentScreen("game_screen")
             }

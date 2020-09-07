@@ -25,7 +25,7 @@ func Test_Game_Start(t *testing.T) {
 	if err := g.Start(c, host.UserID); err != nil {
 		t.Errorf("game should let to be started by host")
 	}
-	if !g.Started() {
+	if !g.started {
 		t.Errorf("Game should be started by now.")
 	}
 }

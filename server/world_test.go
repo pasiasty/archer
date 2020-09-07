@@ -15,7 +15,7 @@ func Test_World_CreateWorld(t *testing.T) {
 		}
 		for i := 0; i < 16; i++ {
 			t.Run(fmt.Sprintf("%d players variant: %d", numPlayers, i), func(t *testing.T) {
-				CreateWorld(0, players)
+				CreateWorld(0, players, GameSettings{})
 			})
 		}
 	}

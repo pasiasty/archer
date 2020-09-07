@@ -15,3 +15,14 @@ type PollTurn struct {
 	CurrentPlayerAlpha float32
 	ShotPerformed      bool
 }
+
+// GameStatus tells the status of the game.
+type GameStatus struct {
+	Started       bool
+	WorldSettings WorldSettings
+}
+
+// WorldSettings define settings of the world.
+type WorldSettings struct {
+	ShootTimeout int32
+}

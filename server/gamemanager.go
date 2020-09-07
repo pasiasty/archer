@@ -140,11 +140,11 @@ func (gm *GameManager) StartGame(c buffalo.Context, gameID, userID string) error
 	return game.Start(c, userID)
 }
 
-// GameHasStarted tells whether game has started.
-func (gm *GameManager) GameHasStarted(c buffalo.Context, gameID string) (bool, error) {
+// GameStatus tells the status of the game.
+func (gm *GameManager) GameStatus(c buffalo.Context, gameID string) (GameStatus, error) {
 	game, err := gm.GetGame(c, gameID)
 	if err != nil {
-		return false, err
+		return GameStatus{}, err
 	}
-	return game.Started(), nil
+	return game.Status(), nil
 }

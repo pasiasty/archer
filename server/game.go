@@ -90,9 +90,14 @@ func CreateGame(gameID string, opts ...GameOption) *Game {
 	}
 }
 
-// Started tells whether game has started.
-func (g *Game) Started() bool {
-	return g.started
+// Status tells the status of the game.
+func (g *Game) Status() GameStatus {
+	return GameStatus{
+		Started: g.started,
+		WorldSettings: WorldSettings{
+			ShootTimeout: g.gs.shootTimeout,
+		},
+	}
 }
 
 // Start starts the game.
@@ -119,7 +124,7 @@ func (g *Game) Start(c buffalo.Context, userID string) error {
 
 // GetWorld is used for getting the world state.
 func (g *Game) GetWorld(c buffalo.Context) (*World, error) {
-	if !g.Started() {
+	if !g.started {
 		return nil, c.Error(http.StatusForbidden, fmt.Errorf("cannot get world for not started game: %s", g.gameID))
 	}
 	return g.world, nil

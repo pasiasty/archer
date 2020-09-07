@@ -103,3 +103,21 @@ export class ArrowState {
         this.Orientation = 0
     }
 }
+
+export class GameStatus {
+    Started: boolean
+    WorldSettings: WorldSettings
+
+    constructor() {
+        this.Started = false
+        this.WorldSettings = new WorldSettings()
+    }
+}
+
+export class WorldSettings {
+    ShootTimeout: number
+
+    constructor() {
+        this.ShootTimeout = 0
+    }
+}

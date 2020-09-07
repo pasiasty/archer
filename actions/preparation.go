@@ -88,15 +88,15 @@ func PreparationStartGame(c buffalo.Context) error {
 	return c.Render(http.StatusOK, r.JSON(server.Empty{}))
 }
 
-// PreparationGameHasStarted tells whether game has already started.
-func PreparationGameHasStarted(c buffalo.Context) error {
+// PreparationGameStatus tells the status of the game.
+func PreparationGameStatus(c buffalo.Context) error {
 	gameID := c.Param("game_id")
 
-	started, err := gm.GameHasStarted(c, gameID)
+	status, err := gm.GameStatus(c, gameID)
 	if err != nil {
 		return err
 	}
-	return c.Render(http.StatusOK, r.JSON(started))
+	return c.Render(http.StatusOK, r.JSON(status))
 }
 
 // PreparationGameSettings defines settings of the game.

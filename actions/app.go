@@ -67,7 +67,7 @@ func App() *buffalo.App {
 		app.POST("/preparation/add_player", PreparationAddPlayer)
 		app.POST("/preparation/remove_player", PreparationRemovePlayer)
 		app.POST("/preparation/start_game", PreparationStartGame)
-		app.POST("/preparation/game_has_started", PreparationGameHasStarted)
+		app.POST("/preparation/game_status", PreparationGameStatus)
 
 		app.POST("/game/get_world", GameGetWorld)
 		app.POST("/game/poll_turn", GamePollTurn)
