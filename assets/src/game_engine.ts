@@ -9,6 +9,7 @@ import { getCookie, optimalViewport } from "./utils"
 import { ScreenSelector } from "./screen_selector"
 import { Consts } from "./constants"
 import { Arrow } from "./arrow"
+import { time } from "console"
 
 export class GameEngine extends ex.Engine {
     players: Map<string, Player>
@@ -16,10 +17,14 @@ export class GameEngine extends ex.Engine {
     currentPlayer: string
     planets: Map<number, Planet>
     cursor: Cursor
-    label: ex.Label
+    currentPlayerLabel: ex.Label
     ss: ScreenSelector
-    timer: ex.Timer
+    watchMoveTimer: ex.Timer
     autoResizeOn: boolean
+    shootTimeout: number
+    shootTime: number
+    shootTimeLabel: ex.Label
+    shootingTimer: ex.Timer
 
     constructor(ss: ScreenSelector) {
         super({
@@ -54,14 +59,23 @@ export class GameEngine extends ex.Engine {
         this.cursor = new Cursor(this, this.performShot)
         this.currentPlayer = ""
 
-        this.label = new ex.Label('Current player:', 0, 40)
-        this.label.color = ex.Color.White
-        this.label.fontFamily = 'Arial'
-        this.label.fontSize = 40
-        this.label.fontUnit = ex.FontUnit.Px
-        this.label.textAlign = ex.TextAlign.Left
+        this.currentPlayerLabel = new ex.Label('Current player:', 0, 40)
+        this.currentPlayerLabel.color = ex.Color.White
+        this.currentPlayerLabel.fontFamily = 'Arial'
+        this.currentPlayerLabel.fontSize = 40
+        this.currentPlayerLabel.fontUnit = ex.FontUnit.Px
+        this.currentPlayerLabel.textAlign = ex.TextAlign.Left
 
-        this.timer = new ex.Timer({
+        this.shootTimeout = 0
+        this.shootTime = 0
+        this.shootTimeLabel = new ex.Label('', 1850, 40)
+        this.shootTimeLabel.color = ex.Color.White
+        this.shootTimeLabel.fontFamily = 'Arial'
+        this.shootTimeLabel.fontSize = 40
+        this.shootTimeLabel.fontUnit = ex.FontUnit.Px
+        this.shootTimeLabel.textAlign = ex.TextAlign.Left
+
+        this.watchMoveTimer = new ex.Timer({
             interval: Consts.watchMoveInterval,
             fcn: () => {
                 this.pollTurn()
@@ -69,8 +83,33 @@ export class GameEngine extends ex.Engine {
             repeats: true,
         })
 
-        this.add(this.label)
-        this.label.setZIndex(50)
+        this.shootingTimer = this.newShootingTimer()
+
+        this.add(this.currentPlayerLabel)
+        this.currentPlayerLabel.setZIndex(50)
+        this.add(this.shootTimeLabel)
+        this.shootTimeLabel.setZIndex(50)
+    }
+
+    newShootingTimer(): ex.Timer {
+        this.shootTime = this.shootTimeout
+        this.shootTimeLabel.text = this.shootTime.toString()
+        return new ex.Timer({
+            interval: 1000,
+            fcn: () => {
+                this.shootTime--
+
+                if (this.shootTime == 0) {
+                    this.remove(this.shootingTimer)
+                    this.shootTimeLabel.text = ''
+                    this.performShot(this, new ex.Vector(0, 0), false)
+                } else {
+                    this.shootTimeLabel.text = this.shootTime.toString()
+                }
+            },
+            numberOfRepeats: this.shootTimeout,
+            repeats: true,
+        })
     }
 
     run() {
@@ -83,6 +122,8 @@ export class GameEngine extends ex.Engine {
             var username = getCookie("username")
 
             $.post("/game/get_world", { "game_id": gameID }, (data: msgs.PublicWorld) => {
+                this.shootTimeout = data.WorldSettings.ShootTimeout
+
                 for (let p of data.Planets) {
                     var newPlanet = new Planet(p)
                     this.planets.set(newPlanet.planetID, newPlanet)
@@ -107,23 +148,27 @@ export class GameEngine extends ex.Engine {
                         }
                     }
                 }
-                this.add(this.timer)
+                this.add(this.watchMoveTimer)
             }, "json").fail(() => {
                 this.ss.restoreToWelcomeScreen(true)
             })
         })
     }
 
-    performShot(self: ex.Engine, v: ex.Vector) {
+    performShot(self: ex.Engine, v: ex.Vector, checkSize = true) {
         var g = self as GameEngine
-        if (v.size > 50) {
+
+        if (!checkSize || v.size > 50) {
+            g.remove(g.shootingTimer)
+            g.shootTimeLabel.text = ''
+
             var gameID = getCookie("game_id")
             var userID = getCookie("user_id")
 
             var currentPlayer = g.players.get(g.currentPlayer)
             currentPlayer?.deactivate()
             g.disableCursor()
-            g.label.color = ex.Color.White
+            g.currentPlayerLabel.color = ex.Color.White
 
             $.post("/game/shoot", {
                 "game_id": gameID,
@@ -143,7 +188,7 @@ export class GameEngine extends ex.Engine {
     afterPlayingTrajectory(self: ex.Engine, collidedWith: string) {
         var g = self as GameEngine
         g.players.get(collidedWith)?.killPlayer()
-        g.add(g.timer)
+        g.add(g.watchMoveTimer)
     }
 
     enableCursor() {
@@ -158,11 +203,16 @@ export class GameEngine extends ex.Engine {
     }
 
     takeTurn(currentPlayer: string) {
-        this.remove(this.timer)
+        this.remove(this.watchMoveTimer)
         this.enableCursor()
         this.players.get(currentPlayer)?.activate()
         this.currentPlayer = currentPlayer
-        this.label.color = ex.Color.Green
+        this.currentPlayerLabel.color = ex.Color.Green
+
+        if (this.shootTimeout != 0) {
+            this.shootingTimer = this.newShootingTimer()
+            this.add(this.shootingTimer)
+        }
     }
 
     endTurn(data: msgs.Trajectory) {
@@ -177,17 +227,17 @@ export class GameEngine extends ex.Engine {
         var gameID = getCookie("game_id")
 
         $.post("/game/poll_turn", { "game_id": gameID }, (data: msgs.PollTurn) => {
-            this.label.text = `Current player: ${data.CurrentPlayer}`
+            this.currentPlayerLabel.text = `Current player: ${data.CurrentPlayer}`
             if (this.localPlayers.has(data.CurrentPlayer)) {
                 this.takeTurn(data.CurrentPlayer)
             } else {
                 var currentPlayer = this.players.get(data.CurrentPlayer)
                 this.currentPlayer = data.CurrentPlayer
                 currentPlayer?.setDestination(data.CurrentPlayerAlpha)
-                this.label.color = ex.Color.White
+                this.currentPlayerLabel.color = ex.Color.White
 
                 if (data.ShotPerformed) {
-                    this.remove(this.timer)
+                    this.remove(this.watchMoveTimer)
                     this.getTrajectory(this)
                 }
             }

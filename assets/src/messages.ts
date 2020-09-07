@@ -24,11 +24,13 @@ export class PublicWorld {
     Planets: Planet[]
     Players: Player[]
     CurrentPlayer: Player
+    WorldSettings: WorldSettings
 
     constructor() {
         this.Planets = []
         this.Players = []
         this.CurrentPlayer = new Player()
+        this.WorldSettings = new WorldSettings
     }
 }
 

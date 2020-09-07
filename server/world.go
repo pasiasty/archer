@@ -28,6 +28,7 @@ type PublicWorld struct {
 	Planets       []*Planet
 	Players       []*PublicPlayer
 	CurrentPlayer *PublicPlayer
+	WorldSettings WorldSettings
 }
 
 // CreateWorld creates new world.
@@ -95,6 +96,9 @@ func (w *World) GetPublicWorld() *PublicWorld {
 		Planets:       w.planets,
 		Players:       players,
 		CurrentPlayer: players[w.currentPlayerIdx],
+		WorldSettings: WorldSettings{
+			ShootTimeout: w.gs.shootTimeout,
+		},
 	}
 }
 
@@ -128,7 +132,15 @@ func (w *World) Shoot(c buffalo.Context, player string, shot Vector) (*Trajector
 		return nil, c.Error(http.StatusForbidden, fmt.Errorf("player: %s is not an active one", player))
 	}
 
-	t := w.generateTrajectory(currentPlayer.name, currentPlayer.Coordinates(), shot)
+	var t *Trajectory
+	if shot.X == 0 && shot.Y == 0 {
+		t = &Trajectory{
+			ArrowStates:  []ArrowState{},
+			CollidedWith: "",
+		}
+	} else {
+		t = w.generateTrajectory(currentPlayer.name, currentPlayer.Coordinates(), shot)
+	}
 	w.returnedTrajectories = 1
 	w.currentTrajectory = t
 	w.endTurnIfNeeded()
