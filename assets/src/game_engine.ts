@@ -93,7 +93,11 @@ export class GameEngine extends ex.Engine {
 
     newShootingTimer(): ex.Timer {
         this.shootTime = this.shootTimeout
-        this.shootTimeLabel.text = this.shootTime.toString()
+        if (this.shootTime != 0)
+            this.shootTimeLabel.text = this.shootTime.toString()
+        else
+            this.shootTimeLabel.text = ''
+
         return new ex.Timer({
             interval: 1000,
             fcn: () => {

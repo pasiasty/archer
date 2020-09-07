@@ -216,6 +216,10 @@ func (w *World) generateTrajectory(shooter string, start, shot Vector) *Trajecto
 		vel = vel.Cap(maxArrowSpeed)
 		alpha = vectorToAngle(vel)
 
+		if w.gs.loopedWorld {
+			pos = pos.LoopPoint()
+		}
+
 		if w.outsideBoundingBox(pos) {
 			return t
 		}

@@ -76,3 +76,20 @@ func (v Vector) Cap(d float32) Vector {
 	}
 	return v
 }
+
+// LoopPoint returns always positive vector (modulo world boundaries).
+func (v Vector) LoopPoint() Vector {
+	if v.X < 0 {
+		v.X += maxX
+	}
+	if v.X > maxX {
+		v.X -= maxX
+	}
+	if v.Y < 0 {
+		v.Y += maxY
+	}
+	if v.Y > maxY {
+		v.Y -= maxY
+	}
+	return v
+}
