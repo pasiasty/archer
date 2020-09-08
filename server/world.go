@@ -165,13 +165,34 @@ func vectorToAngle(v Vector) float32 {
 	return flipRadianIfNegative(math.Pi - float32(math.Atan(float64(-v.Y/v.X))))
 }
 
+func applySingleForce(pos, vel, planetPos Vector, mass float32) Vector {
+	dist := pos.Distance(planetPos)
+	accLen := gravityConst * mass / (dist * dist)
+	accDir := planetPos.Sub(pos)
+	acc := accDir.CopyWithSameAlpha(accLen)
+	return vel.Add(acc.Mult(simulationTimeStep))
+}
+
 func (w *World) applyGravity(pos, vel Vector) Vector {
 	for _, p := range w.planets {
-		dist := pos.Distance(p.Location)
-		accLen := gravityConst * p.Mass / (dist * dist)
-		accDir := p.Location.Sub(pos)
-		acc := accDir.CopyWithSameAlpha(accLen)
-		vel = vel.Add(acc.Mult(simulationTimeStep))
+		vel = applySingleForce(pos, vel, p.Location, p.Mass)
+		if w.gs.loopedWorld {
+			invLocX := p.Location
+			if invLocX.X < pos.X {
+				invLocX.X += maxX
+			} else {
+				invLocX.X -= maxX
+			}
+			vel = applySingleForce(pos, vel, invLocX, p.Mass)
+
+			invLocY := p.Location
+			if invLocY.Y < pos.Y {
+				invLocY.Y += maxY
+			} else {
+				invLocY.Y -= maxY
+			}
+			vel = applySingleForce(pos, vel, invLocY, p.Mass)
+		}
 	}
 	return vel
 }
