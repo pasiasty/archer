@@ -9,7 +9,7 @@ import (
 )
 
 func (as *ActionSuite) Test_Game_GetWorld() {
-	fmt.Println("Hey!")
+	fmt.Println("Hey 2!")
 	as.Request("/game/get_world", map[string]interface{}{"game_id": "abc"}, http.StatusNotFound)
 	as.Request("/game/get_world", map[string]interface{}{"game_id": as.u.GameID}, http.StatusForbidden)
 
