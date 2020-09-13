@@ -38,7 +38,7 @@ export const Colors: ex.Color[] = [
 
 const loader = new ex.Loader();
 
-const CharNames: { [key: number]: string } = {
+export const CharNames: { [key: number]: string } = {
     0: 'desmond',
     1: 'desmond',
     2: 'desmond',
@@ -60,12 +60,13 @@ for (const key in CharNames) {
     let name = CharNames[key];
     CharAnimations[key] = {}
     for (const animation in ['walk', 'aim', 'fire', 'death']) {
-
         var sheet = new ex.Texture('/assets/characters/${name}/${animation}.png')
         loader.addResource(sheet)
-        CharAnimations[key]['walk'] = new ex.SpriteSheet(sheet, 4, 1, 64, 64)
+        CharAnimations[key][animation] = new ex.SpriteSheet(sheet, 1, sheet.width / 64, 64, 64)
+        if (animation == 'walk') {
+            CharAnimations[key]['idle'] = new ex.SpriteSheet(sheet, 1, 1, 64, 64)
+        }
     }
-
 }
 
 for (const img in Images) {
@@ -80,4 +81,4 @@ export function getPlanetTexture(id: number): ex.Texture {
     return PlanetImages[id % PlanetImages.length]
 }
 
-export { Images, loader };
+export { Images, loader, CharAnimations };

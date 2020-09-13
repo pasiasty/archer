@@ -9,6 +9,7 @@ import { circle } from "excalibur/dist/Util/DrawUtil"
 
 export class Player extends ex.Actor {
     playerColor: ex.Color
+    playerCharacter: string
     activated: boolean
     posChanged: boolean
     timer: ex.Timer
@@ -28,6 +29,7 @@ export class Player extends ex.Actor {
         this.ss = ss
         this.posChanged = false
         this.activated = false
+        this.playerCharacter = res.CharNames[colorID]
         this.playerColor = res.Colors[colorID]
         var playerSprite = res.Images.player.asSprite().clone()
         playerSprite.scale = new ex.Vector(0.1, 0.1)
