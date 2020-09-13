@@ -11,4 +11,5 @@ export const Consts: { [key: string]: number } = {
     indicatorMaxRadius: 7,
     indicatorChangeVel: 0.007,
     indicatorOffset: 63,
+    animationFrameLength: 125
 };

@@ -31,11 +31,30 @@ export class Player extends ex.Actor {
         this.activated = false
         this.playerCharacter = res.CharNames[colorID]
         this.playerColor = res.Colors[colorID]
-        var playerSprite = res.Images.player.asSprite().clone()
-        playerSprite.scale = new ex.Vector(0.1, 0.1)
-        playerSprite.offset = new ex.Vector(0, 25 + p.radius)
-        playerSprite.colorize(this.playerColor)
-        this.addDrawing(playerSprite)
+        // Adding all the animations and poses to the player
+        for (let animation of ['walk', 'aim', 'fire', 'death']) {
+            var charSprite = res.CharAnimations[colorID][animation].getAnimationForAll(this.game, Consts.animationFrameLength)
+            charSprite.scale = new ex.Vector(1, 1)
+            charSprite.anchor = new ex.Vector(0, 0.5 + p.radius / 64) //half of the character height + radius / sprite heights
+            charSprite.colorize(this.playerColor)
+            this.addDrawing(animation, charSprite)
+        }
+        var charSprite = res.CharAnimations[colorID]['walk'].getAnimationByIndices(this.game, [0], Consts.animationFrameLength)
+        charSprite.scale = new ex.Vector(1, 1)
+        charSprite.anchor = new ex.Vector(0, 0.5 + p.radius / 64) //half of the character height + radius / sprite heights
+        charSprite.colorize(this.playerColor)
+        this.addDrawing('idle', charSprite)
+        var charSprite = res.CharAnimations[colorID]['aim'].getAnimationByIndices(this.game, [1], Consts.animationFrameLength)
+        charSprite.scale = new ex.Vector(1, 1)
+        charSprite.anchor = new ex.Vector(0, 0.5 + p.radius / 64) //half of the character height + radius / sprite heights
+        charSprite.colorize(this.playerColor)
+        this.addDrawing('aiming', charSprite)
+        this.setDrawing('walk')
+        // var playerSprite = res.Images.player.asSprite().clone()
+        // playerSprite.scale = new ex.Vector(0.1, 0.1)
+        // playerSprite.offset = new ex.Vector(0, 25 + p.radius)
+        // playerSprite.colorize(this.playerColor)
+        // this.addDrawing(playerSprite)
         this.rotation = alpha
         this.timer = new ex.Timer({
             interval: Consts.movInterval,

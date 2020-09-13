@@ -1,4 +1,5 @@
 import * as ex from "excalibur";
+import { SprParams } from "./sprites_params"
 
 const Images: { [key: string]: ex.Texture } = {
     sky: new ex.Texture('/public/assets/images/sky.jpg'),
@@ -52,6 +53,9 @@ export const CharNames: { [key: number]: string } = {
     10: 'desmond',
     11: 'desmond',
     12: 'desmond',
+    13: 'desmond',
+    14: 'desmond',
+    15: 'desmond',
 }
 
 var CharAnimations: { [key: number]: { [key: string]: ex.SpriteSheet } } = {};
@@ -59,13 +63,10 @@ var CharAnimations: { [key: number]: { [key: string]: ex.SpriteSheet } } = {};
 for (const key in CharNames) {
     let name = CharNames[key];
     CharAnimations[key] = {}
-    for (const animation in ['walk', 'aim', 'fire', 'death']) {
-        var sheet = new ex.Texture('/assets/characters/${name}/${animation}.png')
+    for (let animation of ['walk', 'aim', 'fire', 'death']) {
+        var sheet = new ex.Texture('/assets/images/characters/' + name + '/' + animation + '.png')
         loader.addResource(sheet)
-        CharAnimations[key][animation] = new ex.SpriteSheet(sheet, 1, sheet.width / 64, 64, 64)
-        if (animation == 'walk') {
-            CharAnimations[key]['idle'] = new ex.SpriteSheet(sheet, 1, 1, 64, 64)
-        }
+        CharAnimations[key][animation] = new ex.SpriteSheet(sheet, SprParams[name][animation], 1, 64, 64)
     }
 }
 
