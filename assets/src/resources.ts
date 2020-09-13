@@ -38,6 +38,36 @@ export const Colors: ex.Color[] = [
 
 const loader = new ex.Loader();
 
+const CharNames: { [key: number]: string } = {
+    0: 'desmond',
+    1: 'desmond',
+    2: 'desmond',
+    3: 'desmond',
+    4: 'desmond',
+    5: 'desmond',
+    6: 'desmond',
+    7: 'desmond',
+    8: 'desmond',
+    9: 'desmond',
+    10: 'desmond',
+    11: 'desmond',
+    12: 'desmond',
+}
+
+var CharAnimations: { [key: number]: { [key: string]: ex.SpriteSheet } } = {};
+
+for (const key in CharNames) {
+    let name = CharNames[key];
+    CharAnimations[key] = {}
+    for (const animation in ['walk', 'aim', 'fire', 'death']) {
+
+        var sheet = new ex.Texture('/assets/characters/${name}/${animation}.png')
+        loader.addResource(sheet)
+        CharAnimations[key]['walk'] = new ex.SpriteSheet(sheet, 4, 1, 64, 64)
+    }
+
+}
+
 for (const img in Images) {
     loader.addResource(Images[img]);
 }
