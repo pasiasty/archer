@@ -110,7 +110,7 @@ func Test_Game_ExceedingMaxPlayers(t *testing.T) {
 		Context: context.Background(),
 	}
 
-	g := CreateGame("a", MaxPlayers(2))
+	g := CreateGame("a", WithMaxPlayers(2))
 	host := g.AddHostUser()
 
 	if err := g.AddPlayer(c, host.UserID); err != nil {

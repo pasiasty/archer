@@ -65,8 +65,8 @@ type gameOpts struct {
 // GameOption might be used for configuring game.
 type GameOption func(*gameOpts)
 
-// MaxPlayers overrides default max number of game players.
-func MaxPlayers(max int) GameOption {
+// WithMaxPlayers overrides default max number of game players.
+func WithMaxPlayers(max int) GameOption {
 	return func(o *gameOpts) {
 		o.maxPlayers = max
 	}

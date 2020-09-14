@@ -1,0 +1,9 @@
+version: "2.0"
+services:
+  archer:
+    restart: always
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - GO_ENV

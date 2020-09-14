@@ -5,8 +5,9 @@ import (
 	"github.com/gobuffalo/envy"
 	forcessl "github.com/gobuffalo/mw-forcessl"
 	paramlogger "github.com/gobuffalo/mw-paramlogger"
-	"github.com/pasiasty/archer/server"
 	"github.com/unrolled/secure"
+
+	"github.com/pasiasty/archer/server"
 
 	csrf "github.com/gobuffalo/mw-csrf"
 	i18n "github.com/gobuffalo/mw-i18n"

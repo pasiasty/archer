@@ -5,8 +5,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gobuffalo/buffalo"
+	"github.com/pasiasty/archer/models"
 	"github.com/pasiasty/archer/server"
+
+	"github.com/gobuffalo/buffalo"
 )
 
 // GameGetWorld default implementation.
@@ -56,7 +58,7 @@ func GameMove(c buffalo.Context) error {
 
 	newAlphaFloat, err := strconv.ParseFloat(newAlpha, 32)
 	if err != nil {
-		c.Error(http.StatusBadRequest, fmt.Errorf("couldn't convert string to float: %v", err))
+		return c.Error(http.StatusBadRequest, fmt.Errorf("couldn't convert string to float: %v", err))
 	}
 	w.MovePlayer(c, username, float32(newAlphaFloat))
 	return c.Render(http.StatusOK, r.JSON(server.Empty{}))
@@ -78,23 +80,42 @@ func GameShoot(c buffalo.Context) error {
 
 	newAlphaFloat, err := strconv.ParseFloat(newAlpha, 32)
 	if err != nil {
-		c.Error(http.StatusBadRequest, fmt.Errorf("couldn't convert string to float: %v", err))
+		return c.Error(http.StatusBadRequest, fmt.Errorf("couldn't convert string to float: %v", err))
 	}
 	w.MovePlayer(c, username, float32(newAlphaFloat))
 
 	shotXFloat, err := strconv.ParseFloat(shotX, 32)
 	if err != nil {
-		c.Error(http.StatusBadRequest, fmt.Errorf("couldn't convert string to float: %v", err))
+		return c.Error(http.StatusBadRequest, fmt.Errorf("couldn't convert string to float: %v", err))
 	}
 
 	shotYFloat, err := strconv.ParseFloat(shotY, 32)
 	if err != nil {
-		c.Error(http.StatusBadRequest, fmt.Errorf("couldn't convert string to float: %v", err))
+		return c.Error(http.StatusBadRequest, fmt.Errorf("couldn't convert string to float: %v", err))
 	}
 
 	t, err := w.Shoot(c, username, server.Vector{X: float32(shotXFloat), Y: float32(shotYFloat)})
 	if err != nil {
 		return err
+	}
+
+	shot := &models.PlayerShot{
+		GameID:     gameID,
+		PlayerName: username,
+		Collision:  t.CollidedWith,
+	}
+	vErrors, err := models.DB.ValidateAndSave(shot)
+	if err != nil {
+		return c.Error(http.StatusProcessing, fmt.Errorf("failed to put shot information into db: %v : %v", err, vErrors))
+	}
+
+	allShots := models.PlayerShots{}
+	if err := models.DB.All(&allShots); err != nil {
+		return c.Error(http.StatusProcessing, fmt.Errorf("failed to obtain all shots: %v", err))
+	}
+	c.Logger().Warnf("obtained %d shots", len(allShots))
+	for idx, shot := range allShots {
+		c.Logger().Warnf("shot %d : %+v", idx, shot)
 	}
 
 	return c.Render(http.StatusOK, r.JSON(t))

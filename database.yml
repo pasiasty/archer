@@ -1,0 +1,22 @@
+---
+development:
+  dialect: mysql
+  database: archer
+  user: archer
+  password: archer
+  host: 127.0.0.1
+  pool: 5
+  port: 8135
+
+test:
+  dialect: "sqlite3"
+  database: ./test.sqlite
+
+production:
+  dialect: mysql
+  database: archer
+  user: archer
+  password: archer
+  host: 127.0.0.1
+  pool: 5
+  port: 8135

@@ -21,6 +21,9 @@ ADD . .
 RUN buffalo build --static -o /bin/app
 
 FROM alpine
+
+LABEL "com.centurylinklabs.watchtower.enable"="true"
+
 RUN apk add --no-cache bash
 RUN apk add --no-cache ca-certificates
 
@@ -34,4 +37,4 @@ ENV ADDR=0.0.0.0
 
 EXPOSE 3000
 
-CMD /bin/app
+CMD /bin/app pop migrate; /bin/app

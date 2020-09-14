@@ -1,8 +1,8 @@
 name = "archer"
 bin = "bin/archer"
 vcs = "git"
-with_pop = false
-with_sqlite = false
+with_pop = true
+with_sqlite = true
 with_dep = false
 with_webpack = true
 with_nodejs = true

@@ -1,0 +1,7 @@
+create_table("player_shots") {
+	t.Column("id", "uuid", {primary: true})
+	t.Column("game_id", "string", {})
+	t.Column("player_name", "string", {})
+	t.Column("collision", "string", {})
+	t.Timestamps()
+}
