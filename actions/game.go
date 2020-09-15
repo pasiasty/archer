@@ -109,15 +109,6 @@ func GameShoot(c buffalo.Context) error {
 		return c.Error(http.StatusProcessing, fmt.Errorf("failed to put shot information into db: %v : %v", err, vErrors))
 	}
 
-	allShots := models.PlayerShots{}
-	if err := models.DB.All(&allShots); err != nil {
-		return c.Error(http.StatusProcessing, fmt.Errorf("failed to obtain all shots: %v", err))
-	}
-	c.Logger().Warnf("obtained %d shots", len(allShots))
-	for idx, shot := range allShots {
-		c.Logger().Warnf("shot %d : %+v", idx, shot)
-	}
-
 	return c.Render(http.StatusOK, r.JSON(t))
 }
 
