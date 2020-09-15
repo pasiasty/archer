@@ -7,8 +7,6 @@ require (
 	github.com/cockroachdb/cockroach-go v2.0.1+incompatible // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/gobuffalo/buffalo v0.16.15
-	github.com/gobuffalo/buffalo-plugins v1.15.0 // indirect
-	github.com/gobuffalo/buffalo-pop/v2 v2.2.0 // indirect
 	github.com/gobuffalo/envy v1.9.0
 	github.com/gobuffalo/fizz v1.13.0 // indirect
 	github.com/gobuffalo/httptest v1.5.0

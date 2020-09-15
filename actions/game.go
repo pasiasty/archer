@@ -99,15 +99,17 @@ func GameShoot(c buffalo.Context) error {
 		return err
 	}
 
-	shot := &models.PlayerShot{
-		GameID:     gameID,
-		PlayerName: username,
-		Collision:  t.CollidedWith,
-	}
-	vErrors, err := models.DB.ValidateAndSave(shot)
-	if err != nil {
-		return c.Error(http.StatusProcessing, fmt.Errorf("failed to put shot information into db: %v : %v", err, vErrors))
-	}
+	go func() {
+		shot := &models.PlayerShot{
+			GameID:     gameID,
+			PlayerName: username,
+			Collision:  t.CollidedWith,
+		}
+		vErrors, err := models.DB.ValidateAndSave(shot)
+		if err != nil {
+			c.Logger().Errorf("failed to put shot information into db: %v : %v", err, vErrors)
+		}
+	}()
 
 	return c.Render(http.StatusOK, r.JSON(t))
 }
