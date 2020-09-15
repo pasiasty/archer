@@ -2,6 +2,8 @@
 
 In this game you will try to kill the other archers in the space while taking into the consideration the force of gravity of surrounding planets!
 
+The game is also hosted under address: [gravityarcher.ddns.net](https://gravityarcher.ddns.net/)
+
 ## Developer guide
 
 In order to quickly start developing you should do following things on your machine:
