@@ -7,3 +7,7 @@ services:
       - "3000:3000"
     environment:
       - GO_ENV
+      - ARCHER_DATABASE
+      - ARCHER_DATABASE_USER
+      - ARCHER_DATABASE_HOST
+      - ARCHER_DATABASE_PORT
