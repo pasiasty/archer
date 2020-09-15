@@ -35,6 +35,8 @@ Gravity archer depends on instance of MySQL server. There are two options of sat
    ARCHER_DATABASE_PORT=<PORT_OF_MYSQL_SERVER>
    ```
 
+   For convenience you can put those definitions into .env file in the root directory of this repository.
+
 1. Instance launched by docker.
 
    You can easily launch MySQL server instance to be used for the development by running:
