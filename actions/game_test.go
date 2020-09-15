@@ -2,14 +2,12 @@ package actions
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/pasiasty/archer/server"
 )
 
 func (as *ActionSuite) Test_Game_GetWorld() {
-	fmt.Println("dummy print")
 	as.Request("/game/get_world", map[string]interface{}{"game_id": "abc"}, http.StatusNotFound)
 	as.Request("/game/get_world", map[string]interface{}{"game_id": as.u.GameID}, http.StatusForbidden)
 

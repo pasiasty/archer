@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
+	"github.com/gobuffalo/envy"
 	"github.com/pasiasty/archer/actions"
 )
 
@@ -13,6 +15,11 @@ import (
 // call `app.Serve()`, unless you don't want to start your
 // application that is. :)
 func main() {
+	fmt.Println("ARCHER_DATABASE", envy.Get("ARCHER_DATABASE", ""))
+	fmt.Println("ARCHER_DATABASE_USER", envy.Get("ARCHER_DATABASE_USER", ""))
+	fmt.Println("ARCHER_DATABASE_PASSWORD", envy.Get("ARCHER_DATABASE_PASSWORD", ""))
+	fmt.Println("ARCHER_DATABASE_HOST", envy.Get("ARCHER_DATABASE_HOST", ""))
+	fmt.Println("ARCHER_DATABASE_PORT", envy.Get("ARCHER_DATABASE_PORT", ""))
 	app := actions.App()
 	if err := app.Serve(); err != nil {
 		log.Fatal(err)
